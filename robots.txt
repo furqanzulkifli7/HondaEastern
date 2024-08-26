@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /private/
+Allow: /public/
+Sitemap: http://www.hondaeasternkelantan.com/sitemap.xml
