@@ -3867,3 +3867,39 @@ const time = () => {
 time();
 
 
+document.addEventListener('DOMContentLoaded', function() {
+  const whatsappButton = document.querySelector('.whatsapp-button');
+  const whatsappChatBox = document.querySelector('.whatsapp-chat-box');
+  const closeChat = document.querySelector('.close-chat');
+  const sendButton = document.querySelector('.send-button');
+  const messageInput = document.getElementById('whatsappMessage');
+  const messageTime = document.getElementById('messageTime'); // Added
+  const now = new Date();
+  const hours = now.getHours().toString().padStart(2, '0');
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const currentTime = `${hours}:${minutes}`;
+
+  // Update the time in the chat box
+  messageTime.textContent = currentTime;
+  // Toggle chat box visibility
+  whatsappButton.addEventListener('click', function() {
+      whatsappChatBox.classList.toggle('show');
+  });
+
+  // Close chat box
+  closeChat.addEventListener('click', function() {
+      whatsappChatBox.classList.remove('show');
+  });
+
+  // Send message via WhatsApp API
+  sendButton.addEventListener('click', function() {
+      const message = messageInput.value.trim();
+      if (message) {
+          const whatsappURL = `https://api.whatsapp.com/send?phone=601110918380&text=${encodeURIComponent(message)}`;
+          window.open(whatsappURL, '_blank');
+      } else {
+          alert("Please enter a message before sending.");
+      }
+  });
+});
+

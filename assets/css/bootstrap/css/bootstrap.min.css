@@ -10944,7 +10944,10 @@ padding: 3rem;
 
 #mainNav {
   padding-bottom: 0rem;/*Ni Penting*/
-  background-color: transparent;
+  background-color: #ffffff;
+  padding-left: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 #mainNav .navbar-toggler {
   padding: .75rem;
@@ -11028,6 +11031,16 @@ background-size: cover;
   background-attachment: scroll;
   background-position: center center;
   background-color: rgba(11, 83, 148, 0.5);
+  opacity: 0;
+  animation: fadeImage 1s 0.5s forwards;
+}
+@keyframes fadeImage {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 header.masthead .masthead-subheading {
   font-size: 1.5rem;

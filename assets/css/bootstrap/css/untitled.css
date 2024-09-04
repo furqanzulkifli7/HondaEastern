@@ -2138,7 +2138,8 @@ body {font-family: 'Montserrat';}body {line-height: 1.6;font-size: 14px;font-wei
   }
 }
 
-#Hours {
+#Hours 
+{
 
   background-image: url("../../../img/background/SERVICE\ COVER.png");
 
@@ -2146,6 +2147,7 @@ body {font-family: 'Montserrat';}body {line-height: 1.6;font-size: 14px;font-wei
   background-repeat: no-repeat;
   background-attachment: scroll;
   background-position: center center;  
+
  /* filter: brightness(80%) sepia(20%); /* Adjust brightness and sepia for silver effect */
 
   .btn {
@@ -2186,6 +2188,7 @@ body {font-family: 'Montserrat';}body {line-height: 1.6;font-size: 14px;font-wei
         color: #ffffff;
         text-transform: uppercase;
         margin-bottom : 25px;
+        padding-top: 20px;
         
     }
 
@@ -2298,7 +2301,7 @@ table {
     .fvl-d > td {
         font-size: 20px;
         font-weight: 400;
-        letter-spacing: 1.2px;
+        letter-spacing: 0.1px;
         color: #ffffff;
         text-transform: uppercase;
         padding: 1em;
@@ -2307,21 +2310,22 @@ table {
     .fvl-d > td > span {
         font-size: 21px;
         font-weight: 900;
-        letter-spacing: 1.2px;
+        letter-spacing: 0.1px;
         color: #ffffff;
         text-transform: uppercase;
     }
 
-    @media screen and (max-width: 382px) {
+    @media screen and (max-width: 576px) {
 
  .fvl-d > td {
         font-size: 14px;
-        padding: 15px 5px;
+        padding: 10px 5px;
     }
 
    #activerow {
         border: none;
-        background-color: #8CC63F;
+        background-color: #e51f1f;
+        border-radius: 20%;
     }
 
     #activerow > td {
@@ -2333,4 +2337,157 @@ table {
         color: white;
     }
 }
+
+
+
+@media (max-width: 576px) /*During website on mobile mode for hours*/
+{  
+  background-size:contain;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+  background-position: top center;  
+  background-color:#1c1b19;
+
+  h1
+  {
+  font-size: 20px;
+  }
+}
+
+
+}
+
+.whatsapp-chat {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.whatsapp-button {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  background-color: #25d366;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.whatsapp-button img {
+  width: 35px;
+  height: 35px;
+}
+
+.notification-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
+}
+
+.whatsapp-chat-box {
+  display: none;
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  width: 300px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.whatsapp-chat-box.show {
+  display: block;
+}
+
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #075e54;
+  border-radius: 10px 10px 0 0;
+  color: white;
+}
+
+.chat-header img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.chat-info {
+  flex-grow: 1;
+}
+
+.status {
+  font-size: 12px;
+  color: #34B7F1;
+}
+
+.close-chat {
+  cursor: pointer;
+  font-size: 20px;
+  color: white;
+}
+
+.chat-body {
+  padding: 10px;
+  background-color: #ece5dd;
+  color: #333;
+}
+
+.message {
+  display: block;
+  font-weight: bold;
+}
+
+.time {
+  display: block;
+  font-size: 12px;
+  color: #999;
+  text-align: right;
+}
+
+.chat-footer {
+  display: flex;
+  padding: 10px;
+  background-color: #075e54;
+  border-radius: 0 0 10px 10px;
+}
+
+#whatsappMessage {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-right: 10px;
+  font-size: 14px;
+}
+
+.send-button {
+  background-color: #25d366;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+
+.chat-button {
+  background-color: #25d366;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
