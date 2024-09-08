@@ -78,6 +78,19 @@ document.addEventListener("DOMContentLoaded", function() {
   // Shrink the navbar when page is scrolled
   document.addEventListener('scroll', navbarShrink);
 
+          // Automatically click the first radio button
+          const firstRadioButton = document.querySelector('.piotnetforms-field-subgroup input[type="radio"]');
+
+          if (firstRadioButton) {
+              firstRadioButton.checked = true;
+              detectDownPaymentOption();
+          }
+
+          const enterAmountRadio = document.getElementById("form-field-downpayment_type-1");
+
+          if (enterAmountRadio) {
+              firstRadioButton.checked = true;
+          }
   //  Activate Bootstrap scrollspy on the main nav element
   const mainNav = document.body.querySelector('#mainNav');
   if (mainNav) {
@@ -108,6 +121,8 @@ function updateLoanAmount() {
   const hargaKeretaSpan = document.getElementById('hargakereta');
 
   hargaKeretaSpan.textContent = `${parseFloat(carModel).toFixed(2)}`;
+
+  document.getElementById('downpaymentval').value = 0;
 
 console.log(document.getElementById('hargakereta').value)
 console.log(document.getElementById('form-field-repayment_period').value)
@@ -181,22 +196,11 @@ function currencyFormat(price){
 
 
 function detectDownPaymentOption() {
-  const noDownPaymentRadio = document.getElementById("form-field-downpayment_type-0");
   const enterAmountRadio = document.getElementById("form-field-downpayment_type-1");
   var downpaymentField = document.getElementById('downpaymentval');
 
-  if (noDownPaymentRadio.checked) {
-    document.getElementById('downpaymentval').value = '';
-    console.log("No Down Payment selected");
-    console.log( document.getElementById('downpaymentval').textContent);
-    downpaymentField.disabled = true;
-    downpaymentField.style.color = "gray"; // Change text color to gray
-    downpaymentField.style.backgroundColor = "#f2f2f2"; // Change background color to light gray (optional)
-    
-    // Do something when No Down Payment is selected
-  } else if (enterAmountRadio.checked) {
+ if (enterAmountRadio.checked) {
     downpaymentField.disabled = false;
-    document.getElementById('downpaymentval').value = 0;
     downpaymentField.style.color = "black"; // Reset text color
     downpaymentField.style.backgroundColor = ""; // Reset background color
     
@@ -206,29 +210,12 @@ function detectDownPaymentOption() {
     console.log("No option selected");
   }
 
-  calculate();
+  //calculate(); // ni bila tekan enter still jadi
 }
 
 function CheckIfNoDownPayment()
 {
-  const noDownPaymentRadio = document.getElementById("form-field-downpayment_type-0");
-  const enterAmountRadio = document.getElementById("form-field-downpayment_type-1");
-  console.log("No Down Payment selected");
-
-  if (noDownPaymentRadio.checked) 
-    {
-    console.log("No Down Payment selected");
-    document.getElementById('downpaymentval').textContent = 0
-    console.log( document.getElementById('downpayment-value').textContent);
-
-    } 
-  else if (enterAmountRadio.checked) 
-    {
-    console.log("Enter Amount selected");
-    console.log( document.getElementById('downpaymentval').textContent);
-    }
-
-    calculate();
+    //calculate(); // TEMPORARILY DISABLE FURTHER NOTICE AHEAD 
 }
 
 
@@ -308,7 +295,7 @@ const data = {
       ]
     },
     {
-      "label": "Honda Type-R",
+      "label": "Honda Civic Type-R",
       "options": [
         {"label": "Type R", "value": "399900"},
       ]
@@ -3573,9 +3560,6 @@ function createCarTable(model, variant) {
   const table = document.createElement('table');
   table.classList.add('car-table');
   table.id = `${model}-${variant}`;
-
-  console.log(model + '  ' + variant);
-
   const headerRow = document.createElement('tr');
   const headerCategory = document.createElement('th');
   headerCategory.innerText = 'Category';
@@ -3645,8 +3629,6 @@ for (const [tabId, model] of Object.entries(tabs)) {
   const variant = `Variant ${variantNumber}`;
   const tabContent = document.getElementById(tabId);
   
-  console.log(`Processing tabId: ${tabId}, model: ${model}, variant: ${variant}`);
-
   if (carData[model] && carData[model][variant]) {
       const table = createCarTable(model, variant);
       tabContent.appendChild(table);
@@ -3666,6 +3648,10 @@ let swiperCards = new Swiper(".card__content", {
   loop: true,
   spaceBetween: 32,
   grabCursor: true,
+
+  autoplay: {
+    delay: 5000,
+  },
 
   pagination: {
     el: ".swiper-pagination",
@@ -3712,9 +3698,13 @@ gridItems.forEach(item => {
       const cardId = this.getAttribute('data-card-id');
       gridModal.style.display = "none";
 console.log("Card Id : " +cardId);
-    
-      document.querySelector(`[data-card-id="${cardId}"]`).scrollIntoView({ behavior:'smooth' });
-      
+const element = document.querySelector(`[data-card-id="${cardId}"]`);
+
+if (element) {
+  element.scrollIntoView({ behavior: 'smooth' });
+} else {
+  console.warn('Element not found');
+}      
   }
 });
 
@@ -3901,5 +3891,21 @@ document.addEventListener('DOMContentLoaded', function() {
           alert("Please enter a message before sending.");
       }
   });
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const swiperWrapper = document.querySelector('.swiper-wrapper');
+    const articles = Array.from(swiperWrapper.children);
+    
+    // Fisher-Yates Shuffle algorithm
+    for (let i = articles.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [articles[i], articles[j]] = [articles[j], articles[i]];
+    }
+
+    // Clear existing articles and append shuffled ones
+    swiperWrapper.innerHTML = '';
+    articles.forEach(article => swiperWrapper.appendChild(article));
 });
 

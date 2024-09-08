@@ -42,6 +42,7 @@
   --bs-danger: #dc3545;
   --bs-light: #f8f9fa;
   --bs-dark: #212529;
+  --bs--honda: #cd0000;
   --bs-primary-rgb: 255, 200, 0;
   --bs-secondary-rgb: 108, 117, 125;
   --bs-success-rgb: 25, 135, 84;
@@ -4039,6 +4040,7 @@ textarea.form-control-lg {
   }
   .navbar-expand-lg .navbar-nav {
     flex-direction: row;
+    align-items: center;
   }
   .navbar-expand-lg .navbar-nav .dropdown-menu {
     position: absolute;
@@ -11014,6 +11016,8 @@ padding: 3rem;
   }
   #mainNav .navbar-nav .nav-item .nav-link {
     color: black;
+    text-align: center;
+    align-items: center;
 
   }
   #mainNav .navbar-nav .nav-item:last-child {
@@ -11024,13 +11028,12 @@ header.masthead {
   padding-top: 10.5rem;
   padding-bottom: 6rem;
   text-align: center;
-  color: #fff;
-  background-image: url("../../../img/background/IMG_8038.jpg");
+  background-color: var(--bs--honda);
+  background-image: url("../../../img/background/new-bg.png");
 background-size: cover;
   background-repeat: no-repeat;
-  background-attachment: scroll;
+  background-attachment: fixed;
   background-position: center center;
-  background-color: rgba(11, 83, 148, 0.5);
   opacity: 0;
   animation: fadeImage 1s 0.5s forwards;
 }
@@ -11057,6 +11060,28 @@ header.masthead .masthead-heading {
   font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
+header.masthead h1 {
+  font-size: 35px;
+  font-weight: 700;
+  margin-bottom: 50px;
+  color: white;;
+}
+
+header.masthead .container p
+{
+  font-size: 18px;
+  color: white;
+  font-weight: 700;
+}
+
+.description
+{
+  text-align: justify;
+  background-color: black;
+  padding: 10px 10px 10px 10px;
+  border: 2px solid white;
+}
+
 @media (min-width: 768px) {
   header.masthead {
     padding-top: 17rem;
@@ -11074,25 +11099,15 @@ header.masthead .masthead-heading {
     line-height: 4.5rem;
     margin-bottom: 4rem;
   }
-}
-@media (max-width: 600px) {
-  header.masthead {
-    padding-top: 17rem;
-    padding-bottom: 2.5rem;
-  }
-  header.masthead .masthead-subheading {
-    font-size: 1rem;
-    font-style: italic;
-    line-height: 2.25rem;
-    margin-bottom: 2rem;
-  }
-  header.masthead .masthead-heading {
-    font-size: 0.5rem;
+  header.masthead h1 {
+    font-size: 55px;
     font-weight: 700;
-    line-height: 4.5rem;
-    margin-bottom: 4rem;
+    line-height: 75px;
+    margin-bottom: 50px;
+    color: white;;
   }
 }
+
 .page-services
 {
   background-image: a;
@@ -11117,8 +11132,11 @@ header.masthead .masthead-heading {
 #services .row.text-center .col-md-4 {
   margin-top: 50px;
   margin-bottom: 30px; /* Adjust the bottom margin for each item */
-  padding-left: 5px; 
-  padding-right: 5px;
+}
+
+#services .text-muted
+{
+  margin-top: 20px;
 }
 .custom-line {
     border-top: 5px double #ccc; /* Add a top border to create the line */
@@ -11128,18 +11146,34 @@ header.masthead .masthead-heading {
 
 #services .container p
 {
-  text-align: justify;
+  text-align: center;
+} 
+ 
+#services .mobile-services
+{
+display: none;
+
 }
-#Product {
-   background-image: url('../../../../assets/img/background/redSilver.png');
-   background-size: cover;
-   background-repeat: no-repeat;
-   background-position: center center;
-   background-color: rgba(0, 0, 0, 0.5); /* Adjust the color for the blend */
-   background-blend-mode: multiply;
- }
- 
- 
+
+#services .mobile-services .owl-carousel
+{
+background-color: white;
+
+}
+
+
+@media (max-width: 768px) 
+{
+  #services .desktop-services
+  {
+  display: none;
+  }
+  #services .mobile-services
+  {
+  display: block;
+  }
+
+}
  #Product .Product-item2 {
   max-width: 750px;
   margin-left: auto;
@@ -11187,7 +11221,6 @@ text-align: center;
 }
 #Product .Product-item2 .Product-caption .Product-caption-heading {
   font-size: 2.5rem;
-  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-weight: 700;
   margin-bottom: 0;
 }
@@ -11244,14 +11277,10 @@ text-align: center;
 }
 #Product .Product-item .Product-caption .Product-caption-heading {
   font-size: 1.5rem;
-  font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   font-weight: 700;
   margin-bottom: 0;
 }
-#Product .Product-item .Product-caption .Product-caption-subheading {
-  font-style: italic;
-  font-family: "Roboto Slab", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-}
+
 
 .img-fluid {
   max-width: 100%;
@@ -11269,36 +11298,14 @@ text-align: center;
   width: 150px;
   height: 150px;
 }
-@media (max-width: 766px)
+
+.img-servis2
 {
-  #Product .Product-item .Product-caption .Product-caption-heading {
-    font-size: 1.0rem;
-    font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    font-weight: 700;
-    margin-bottom: 0;
-  }
-  #Product .Product-item .Product-caption .Product-caption-subheading {
-    font-size: 1.0rem;
-    font-style: italic;
-    font-family: "Roboto Slab", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  }
+  width: 150px;
+  height: 150px;
+  display: block; /* Ensure that it is treated as a block element */
+  object-fit: contain; /* Optional: Helps maintain aspect ratio */
 }
-
-@media (max-width: 576px)
-{
-  #Product .Product-item2 .Product-caption .Product-caption-heading {
-    font-size: 1.0rem;
-    font-family: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    font-weight: 700;
-    margin-bottom: 0;
-  }
-  #Product .Product-item2 .Product-caption .Product-caption-subheading {
-    font-style: italic;
-    font-family: "Roboto Slab", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  }
-
-}
-
 
 .Product-modal .modal-dialog {
   margin: 1rem;
@@ -11340,7 +11347,7 @@ text-align: center;
 }
 
 /* Ensure you're targeting only the specific modal */
-.Product-modal .col-md-4 span {
+.Product-modal .container-fluid span {
   font-size: 18px; /* Adjust font size */
   color: #333; /* Adjust text color */
   font-weight: bold; /* Adjust font weight */
@@ -11368,6 +11375,82 @@ text-align: center;
   color: red;
   font-size: 3rem; /* Adjust the size as needed */
   font-weight: 700; /* Making 'R' bold */
+}
+
+.Product-modal .modal-body ul.list-unstyled .car-models {
+  margin-top: 20px;
+  padding: 0;
+  list-style-type: none;
+}
+
+.Product-modal .modal-body ul.list-unstyled .car-model {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.Product-modal .modal-body ul.list-unstyled .car-model:hover {
+  transform: scale(1.02);
+}
+
+.Product-modal .modal-body ul.list-unstyled h1 {
+margin-top: 10px;
+margin-bottom: 25px;
+}
+
+.Product-modal .modal-body ul.list-unstyled .car-model h2 {
+  font-weight: bold;
+  color: #333;
+  text-align: left; /* Align text to the left */
+}
+
+.Product-modal .modal-body ul.list-unstyled .car-model p {
+  color: #666;
+  text-align: left; /* Align text to the left */
+  margin-bottom: 0px;
+
+}
+
+.Product-modal .modal-body ul.list-unstyled .car-model .price {
+  font-weight: bold;
+  color: #000;
+  text-align: left; /* Align text to the left */
+
+}
+
+
+.Product-modal .SpecificationsTable
+{
+display: block;
+}
+.Product-modal .car-models
+{
+display: none;
+}
+@media (max-width: 768px) 
+{
+  .Product-modal .SpecificationsTable
+  {
+  display: none;
+  }
+  .Product-modal .car-models
+  {
+  display: block;
+  }
+
+  .Product-modal .container-fluid span {
+    font-size: 15px; /* Adjust font size */
+    color: #333; /* Adjust text color */
+    font-weight: bold; /* Adjust font weight */
+    margin-top: 10px; /* Add some spacing above the span */
+    display: block; /* Ensure it's displayed as block for better control */
+    text-align: center; /* Center-align the text */
+    margin-bottom: 1.0rem;
+  }
+  
 }
 
 .prime-cta-black {
@@ -11707,6 +11790,7 @@ section#contact {
 }
 section#contact .section-heading {
   color: #fff;
+  margin-top: 30px;
 }
 section#contact form#contactForm .form-group {
   margin-bottom: 1.5rem;
@@ -12086,9 +12170,18 @@ height: 80px;
   /*border: 1px solid #ddd; /* Add a border for the box */
   padding: 20px;
   margin-bottom: 10px;
+  text-align: center;
 }
 
 
+#promotion .header-promotion .promo-desc
+{
+  margin-top: 20px;
+  --bs-text-opacity: 1;
+  color: #6e6e70;
+  text-align: center;
+  margin-bottom: 20px;
+}
 .line-promotion {
   border-top: 2px solid red; /* Adjust color and thickness as needed */
   width: 100px; /* Adjust width as needed */
@@ -12112,11 +12205,29 @@ height: 80px;
   display: inline-block;
   font-size: 25px;
   text-align: center;
-  background: url('../../../img/background/text-bg.png') no-repeat center/contain;
   padding: 20px;
   margin-bottom: 20px;
   border-radius: 10px;
 }
+
+#promotion .promotion-big-title img
+{
+  max-width: 350px;
+}
+
+#promotion .promotionDesc
+{
+  text-align: center;
+}
+#promotion .promotionDesc h5
+{
+  margin-top: 20px;
+  --bs-text-opacity: 1;
+  color: #6e6e70;
+  text-align: center;
+margin-bottom: 20px;
+}
+
 /* For salesman section
 
 /*=============== GOOGLE FONTS ===============*/
@@ -12166,7 +12277,7 @@ height: 80px;
 
 #About .card__image {
   position: relative;
-  background-color: rgba(222,239,223,255);
+  background-color: rgb(243 239 239);
   padding-top: 1.5rem;
   text-align: center;
   /*margin-bottom: -.75rem;*/
@@ -12187,26 +12298,6 @@ height: 80px;
   justify-content: flex-end;
   margin-right: 25px;
 }
-#About .best-salesperson-box {
-  background-color: #000000; 
-  color: white; /* Black text color */
-  width: 150px; /* Width of the box */
-  height: 50px; /* Height of the box */
-  text-align: center; /* Center the text */
-  font-size: 14px; /* Adjust font size to fit better */
-  font-weight: bold; /* Bold text */
-  border-radius: 10px; /* Rounded corners */
-  position: absolute; /* Position absolutely within its container */
-  top: 10%; /* Center vertically */
-  left: 50%; /* Center horizontally */
-  transform: translate(-50%, -50%); /* Adjust position to be centered */
-  display: flex; /* Flexbox layout */
-  justify-content: center; /* Center text horizontally */
-  align-items: center; /* Center text vertically */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
-  z-index: 1; /* Make sure it's above other elements */
-}
-
 
 #About .card__img {
   width: 75%;
@@ -12406,19 +12497,19 @@ height: 80px;
   margin: 5% auto; 
   padding: 20px;
   border: 1px solid #888;
-  width: 80%; 
+  width: 90%; 
   border-radius: 10px;
   position: relative;
 }
 
-@media (max-width: 500px) 
+@media (max-width: 768px) 
 {
   .modal-content {
     background-color: #fefefe;
     margin: 5% auto; 
     padding: 0px;
     border: 1px solid #888;
-    width: 100%; 
+    width: 95%; 
     border-radius: 10px;
     position: relative;
   }
@@ -12496,9 +12587,21 @@ height: 80px;
   z-index: 1; /* Make sure it's above other elements */
 }
 /* Media query for desktop view */
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 769px) {
   .grid-container {
     grid-template-columns: repeat(3, 1fr); /* Desktop view: 3 columns */
   }
+  
 }
 
+@media screen and (max-width: 768px) {
+  .grid-container {
+    grid-template-columns: repeat(2, 1fr); /* Desktop view: 3 columns */
+  }
+  .grid-item img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    display: inline;}
+}

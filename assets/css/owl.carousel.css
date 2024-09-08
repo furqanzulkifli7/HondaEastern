@@ -47,7 +47,7 @@
     justify-content: center;
     align-items: center;
     height: 500px; /* Set a consistent height for all items */
-    background-color: #f5f5f5; /* Optional: Set a background color for better visibility */
+    /*background-color: #f5f5f5; /* Optional: Set a background color for better visibility */
     -webkit-backface-visibility: hidden;
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none; }
