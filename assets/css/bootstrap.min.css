@@ -11028,14 +11028,20 @@ header.masthead {
   padding-top: 10.5rem;
   padding-bottom: 6rem;
   text-align: center;
-  background-color: var(--bs--honda);
-  background-image: url("../../../img/background/new-bg.png");
+  background-color: #040505;
+  background-image: url(../../assets/img/background/new-bg.png);
 background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-position: center center;
+  padding-left: 20px;
+  padding-right: 20px;
+  font-size: 1.6rem;
+  line-height: 1.8;
+  z-index: 2;
   opacity: 0;
-  animation: fadeImage 1s 0.5s forwards;
+  color: white;
+  animation: fadeIn 2s ease-in forwards;
 }
 @keyframes fadeImage {
   0% {
@@ -11679,7 +11685,7 @@ section#contact .text-center
   margin-bottom: 10px;
 }
 
-section#contact .social-box h3
+section#contact .social-box h5
 {
   justify-content: center;
   color: white;
@@ -11704,11 +11710,15 @@ section#contact .social-buttons .fab
 
 section#contact .social-buttons {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 20px;
+  flex-wrap: wrap;
+
+  justify-content: center;
+  
 }
 
-section#contact .social-buttons .qrImage {
+section#contact .qrImage {
   max-width: 250px;
   padding: 15px 20px;
   justify-content: center;
@@ -11726,6 +11736,8 @@ section#contact .btn {
   font-weight: bold;
   font-size: 16px;
   text-decoration: none;
+  height: fit-content;
+
 }
 
 section#contact .facebook-btn {
@@ -11738,7 +11750,6 @@ section#contact .tiktok-btn {
 
 section#contact .whatsapp-btn {
   background-color: #25d366;
-  width: 250px;
 }
 
 

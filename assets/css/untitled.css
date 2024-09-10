@@ -118,7 +118,7 @@
 @media (min-width: 769px) {
 
   #Product {
-    background-image: url(../../../../assets/img/background/redSilver.png);
+    background-image: url(../../assets/img/background/redSilver.png);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
@@ -2264,16 +2264,16 @@ body {font-family: 'Montserrat';}body {line-height: 1.6;font-size: 14px;font-wei
 #Hours 
 {
 
-  background-image: url("../../../img/background/SERVICE\ COVER.png");
+  background-image: url(../../assets/img/background/service-cover.png);
 
   background-size:cover;
   background-repeat: no-repeat;
   background-attachment: scroll;
   background-position: center center;  
-
+}
  /* filter: brightness(80%) sepia(20%); /* Adjust brightness and sepia for silver effect */
 
-  .btn {
+ #Hours .btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2285,26 +2285,26 @@ body {font-family: 'Montserrat';}body {line-height: 1.6;font-size: 14px;font-wei
     text-decoration: none;
 }
 
-  .whatsapp-btn {
+#Hours .whatsapp-btn {
     background-color: #25d366;
     width: 350px;
   }
-  .row
+  #Hours .row
   {
     margin-top: 10px;
     gap :25px;
   }
 
-  .title
+  #Hours .title
   {
     
     margin-bottom: 25px;
   }
-  .row img
+  #Hours .row img
   {
     max-width: 250px;
   }
-   h2 {
+  #Hours h2 {
         font-size: 35px;
         font-weight: 600;
         letter-spacing: 1px;
@@ -2315,13 +2315,13 @@ body {font-family: 'Montserrat';}body {line-height: 1.6;font-size: 14px;font-wei
         
     }
 
-    h1
+    #Hours h1
     {
       color: white;
       font-weight: bold;
     }
 
-    p {
+    #Hours p {
         font-size: 20px;
         font-weight: bold;
         letter-spacing: 0.5px;
@@ -2330,24 +2330,24 @@ body {font-family: 'Montserrat';}body {line-height: 1.6;font-size: 14px;font-wei
     }
 
     /* Highlight des aktuellen Tages */
-table {
+    #Hours table {
     border-collapse: collapse;
 }
 
-    #activerow {
+#Hours #activerow {
         border: 0.5px solid #e51f1f;
     }
 
-    #activerow > td {
+    #Hours #activerow > td {
         color: #e51f1f;
         font-weight: 600;
     }
 
-    #activerow > td > span {
+    #Hours #activerow > td > span {
         color: #e51f1f;
     }
 
-    .opening-hours {
+    #Hours .opening-hours {
         overflow: hidden;
         padding: 1em;
         max-width: 450px;
@@ -2359,7 +2359,7 @@ table {
 
     }
 
-    .ServisBox
+    #Hours .ServisBox
     {
       gap: 10px;
       display: flex;
@@ -2373,7 +2373,7 @@ table {
       padding-bottom: 20px;
     }
 
-      .social-box {
+    #Hours .social-box {
       gap: 10px;
       display: flex;
       flex-direction: column;
@@ -2381,7 +2381,7 @@ table {
       justify-content: center;
     }
   
-    .checklist {
+    #Hours .checklist {
       font-family:Verdana, Geneva, Tahoma, sans-serif;
       font-size: 18px;
       max-width: 400px;
@@ -2389,24 +2389,24 @@ table {
       padding: 10px 10px 10px 10px;
       margin-top: 20px;
   }
-  .checklist-item {
+  #Hours .checklist-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 10px;
   }
 
-  .checklist-item .tick {
+  #Hours .checklist-item .tick {
     max-width: 25px;
   }
 
-  .checklist-item i {
+  #Hours .checklist-item i {
       color: green;
       font-size: 20px;
       margin-right: 10px;
       flex-shrink: 0;
   }
-  .checklist-item span {
+  #Hours .checklist-item span {
       color:white;
       font-weight: 900;
             flex-grow: 1;
@@ -2419,7 +2419,7 @@ table {
 
     @media (max-width: 768px) 
     {
-      .checklist-item span {
+      #Hours .checklist-item span {
         color:white;
         font-weight: 900;
               flex-grow: 1;
@@ -2431,11 +2431,11 @@ table {
     }     
     
     
-    .opening-hours img {
+    #Hours .opening-hours img {
         max-width: 100px;
       }
   
-    .fvl-d > td {
+      #Hours .fvl-d > td {
         font-size: 20px;
         font-weight: 400;
         letter-spacing: 0.1px;
@@ -2445,7 +2445,7 @@ table {
         text-align: left;
     }
 
-    .fvl-d > td > span {
+    #Hours .fvl-d > td > span {
         font-size: 21px;
         font-weight: 900;
         letter-spacing: 0.1px;
@@ -2455,23 +2455,23 @@ table {
 
     @media screen and (max-width: 576px) {
 
- .fvl-d > td {
+      #Hours .fvl-d > td {
         font-size: 14px;
         padding: 10px 5px;
     }
 
-   #activerow {
+    #Hours #activerow {
         border: none;
         background-color: #e51f1f;
         border-radius: 20%;
     }
 
-    #activerow > td {
+    #Hours #activerow > td {
         color: white;
         font-weight: 600;
     }
 
-    #activerow > td > span {
+    #Hours #activerow > td > span {
         color: white;
     }
 }
@@ -2479,21 +2479,23 @@ table {
 
 
 @media (max-width: 769px) /*During website on mobile mode for hours*/
-{  
+{ 
+  #Hours
+  { 
   background-size:contain;
   background-repeat: no-repeat;
   background-attachment: scroll;
   background-position: top center;  
   background-color:#1c1b19;
-
-  h1
+  }
+  #Hours h1
   {
   font-size: 20px;
   }
 }
 
 
-}
+
 
 .whatsapp-chat {
   position: fixed;
@@ -2632,18 +2634,6 @@ table {
 
 /*Black background*/
 
-header.masthead {
-  padding-left: 20px;
-  padding-right: 20px;
-  font-size: 1.4rem;
-  line-height: 1.8;
-  z-index: 2;
-  opacity: 0;
-  color: white;
-  text-align: justify;
-  animation: fadeIn 2s ease-in forwards;
-}
-
 header.masthead p {
   margin: 0;
   letter-spacing: 1.5px;
@@ -2671,13 +2661,13 @@ header.masthead .text-container p {
     padding-left: 20px;
     padding-right: 20px;
 
-    font-size: 0.7rem;
+    font-size: 0.9rem;
     line-height: 1.8;
     z-index: 2;
     opacity: 0;
     color: white;
     animation: fadeIn 2s ease-in forwards;
-    text-align: center;
+    text-align: justify;
   }
   header.masthead .text-container p {
     margin: 0;

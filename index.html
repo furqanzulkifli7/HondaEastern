@@ -19,8 +19,8 @@
     <link rel="stylesheet" href="assets/css/owl.theme.default.min.css">
     <link rel="stylesheet" href="assets/fonts/fontawesome-all.min.css">
     <link rel="stylesheet" href="assets/fonts/fontawesome5-overrides.min.css">
-    <link rel="stylesheet" href="assets/css/bootstrap/css/untitled.css">
-    <link rel="stylesheet" href="assets/css/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/untitled.css?v=1.1">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css?v=1.1">
     <link rel="stylesheet" href="assets/css/bootstrap/css/swiper-bundle.min.css">
     <link rel="stylesheet" href="assets/css/bootstrap/css/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -136,7 +136,7 @@
                 </div>
                 <div class="col-md-4">
                     <span>
-                        <img class="img-servis" src="assets/img/services/HIP.png" alt="Honda Insurance Plan">
+                        <img class="img-servis" src="assets/img/services/Hip.png" alt="Honda Insurance Plan">
                     </span>
                     <h4 class="section-heading">Honda Insurance Plan</h4>
                     <p class="text-muted">
@@ -220,7 +220,7 @@
         </div>
     </section>
     
-    <section class="bg-light page-section" id="Product">
+    <section class="bg-light page-section" id="Product" loading="lazy">
         <div class="container">
             <div class="text-center">
                 <h2 class="text-uppercase section-heading">PRODUK TERBARU  HONDA</h2>
@@ -308,7 +308,7 @@
                         <div class="Product-item fade-in"><a class="Product-link" data-bs-toggle="modal" href="#ProductModal6">
                                 <div class="Product-hover">
                                     <div class="Product-hover-content"><i class="fas fa-plus fa-3x"></i></div>
-                                </div><img class="img-fluid" src="https://evault.honda.com.my/pixelvault/2023-12/a741c6c37c0672d443c4fbb5cd8fa720a3180e4b19559.png" alt="...">
+                                </div><img class="img-fluid" src="assets/img/car/crv.png" alt="...">
                             </a>
                             <div class="Product-caption">
                                 <div class="Product-caption-heading"><span>HONDA CRV</span></div>
@@ -411,7 +411,7 @@
 
                                                 <div class="header-promotion" id="main-content-sec">
                                     <h1 id="h2-title">
-                                        Nikmati ganjaran sehebat perpaduan kami dengan Honda baharu pada bulan Ogos ini!                      </h1>
+                                        Nikmati ganjaran sehebat perpaduan kami dengan Honda baharu pada bulan September ini!</h1>
                                     <span class="mb-0 promo-desc">
                                         Tarikh Promosi : 1 September 2024 - 30 September 2024                        </span>
                                 </div>
@@ -610,45 +610,76 @@
                                 </div>
                                     
                                 <div class="p21254472 piotnetforms-fields-wrapper piotnetforms-labels-above">
-                                    <div class="piotnetforms-field-type-range_slider piotnetforms-field-group piotnetforms-column  piotnetforms-field-group-annual_interest piotnetforms-col-100">
-                                        <label for="form-field-annual_interest" class="piotnetforms-field-label">Faedah Tahunan / Annual Interest (%)</label><div data-piotnetforms-required></div><div class="piotnetforms-field-container" onchange="calculate()"><input size="1" type="text" name="form_fields[annual_interest]" id="form-field-annual_interest" class="piotnetforms-field piotnetforms-size-" data-piotnetforms-range-slider="{&quot;skin&quot;:&quot;round&quot;,&quot;type&quot;:&quot;single&quot;,&quot;grid&quot;:&quot;true&quot;,&quot;step&quot;:&quot;0.01&quot;,&quot;min&quot;:&quot;1.50&quot;,&quot;max&quot;:&quot;6.00&quot;,&quot;from&quot;:&quot;3.5&quot;,&quot;to&quot;:&quot;5.0&quot;,&quot;postfix&quot;:&quot;%&quot;}" data-piotnetforms-id="2082">						<script>
-                                                    (function ($) {
-                                                        var WidgetpiotnetformsFormBuilderHandlerRangeSliderannual_interest = function ($scope, $) {
-                        
-                                                            var $elements = $scope.find('[data-piotnetforms-range-slider]');
-                        
-                                                            if (!$elements.length) {
-                                                                return;
-                                                            }
-                        
-                                                            $.each($elements, function (i, $element) {
-                                                                let rangerOptions = $(this).attr('data-piotnetforms-range-slider');
-                                                                if ($($element).siblings('.irs').length == 0) {
-                                                                                                                    $('#form-field-annual_interest').ionRangeSlider({
-                                                                            skin: "round", type: "single", grid: true, step: 0.01, min: 1.50, max: 6.00 , from: 3.5, to: 5.0, postfix: "%"                                                });
-                                                                                                            }
-                        
-                                                                $($element).change();
-                                                            });
-                        
-                                                        };
-                        
-                                                        $(window).on('elementor/frontend/init', function () {
-                                                            elementorFrontend.hooks.addAction('frontend/element_ready/piotnetforms-field.default', WidgetpiotnetformsFormBuilderHandlerRangeSliderannual_interest);
-                                                        });
-                        
-                                                        $(document).on('piotnet-widget-init-Piotnetforms_Field', '[data-piotnet-editor-widgets-item-root]', function(){
-                                                            WidgetpiotnetformsFormBuilderHandlerRangeSliderannual_interest($(this), $);
-                                                        });
-                        
-                                                        $(window).on('load', function(){
-                                                            WidgetpiotnetformsFormBuilderHandlerRangeSliderannual_interest($(document), $);
-                                                        });
-                        
-                                                    }(jQuery)); 
-                                                </script>
-                                            </div>			</div>
-                                </div>
+    <div class="piotnetforms-field-type-range_slider piotnetforms-field-group piotnetforms-column piotnetforms-field-group-annual_interest piotnetforms-col-100">
+        <label for="form-field-annual_interest" class="piotnetforms-field-label">Faedah Tahunan / Annual Interest (%)</label>
+                    
+        <!-- Text Box to manually input interest value -->
+            <input class="my-2" type="number" id="interest-input" min="1.50" max="6.00" step="0.01" value="3.5">
+
+        <div data-piotnetforms-required></div>
+        <div class="piotnetforms-field-container">
+            <!-- Range Slider -->
+            <input size="1" type="text" name="form_fields[annual_interest]" id="form-field-annual_interest" class="piotnetforms-field piotnetforms-size-" 
+            data-piotnetforms-range-slider="{&quot;skin&quot;:&quot;round&quot;,&quot;type&quot;:&quot;single&quot;,&quot;grid&quot;:&quot;true&quot;,&quot;step&quot;:&quot;0.01&quot;,&quot;min&quot;:&quot;1.50&quot;,&quot;max&quot;:&quot;6.00&quot;,&quot;from&quot;:&quot;3.5&quot;,&quot;to&quot;:&quot;5.0&quot;,&quot;postfix&quot;:&quot;%&quot;}" data-piotnetforms-id="2082">
+        </div>
+    </div>
+</div>
+
+<script>
+    (function ($) {
+        var WidgetpiotnetformsFormBuilderHandlerRangeSliderannual_interest = function ($scope, $) {
+            var $elements = $scope.find('[data-piotnetforms-range-slider]');
+
+            if (!$elements.length) {
+                return;
+            }
+
+            $.each($elements, function (i, $element) {
+                let rangerOptions = $(this).attr('data-piotnetforms-range-slider');
+                if ($($element).siblings('.irs').length == 0) {
+                    var slider = $('#form-field-annual_interest').ionRangeSlider({
+                        skin: "round",
+                        type: "single",
+                        grid: true,
+                        step: 0.01,
+                        min: 1.50,
+                        max: 6.00,
+                        from: 3.5,
+                        postfix: "%",
+                        onChange: function (data) {
+                            // Update the text box with the current slider value
+                            $('#interest-input').val(data.from);
+                        }
+                    }).data("ionRangeSlider");
+
+                    // When text box value changes, update the slider
+                    $('#interest-input').on('input', function () {
+                        var inputVal = $(this).val();
+                        if (inputVal >= 1.50 && inputVal <= 6.00) {
+                            slider.update({ from: inputVal });
+                        }
+                    });
+
+                    $($element).change();
+                }
+            });
+        };
+
+        $(window).on('elementor/frontend/init', function () {
+            elementorFrontend.hooks.addAction('frontend/element_ready/piotnetforms-field.default', WidgetpiotnetformsFormBuilderHandlerRangeSliderannual_interest);
+        });
+
+        $(document).on('piotnet-widget-init-Piotnetforms_Field', '[data-piotnet-editor-widgets-item-root]', function(){
+            WidgetpiotnetformsFormBuilderHandlerRangeSliderannual_interest($(this), $);
+        });
+
+        $(window).on('load', function(){
+            WidgetpiotnetformsFormBuilderHandlerRangeSliderannual_interest($(document), $);
+        });
+
+    }(jQuery)); 
+</script>
+
                                     
                                 <div class="p99085317 piotnetforms-fields-wrapper piotnetforms-labels-above">
                                     <div class="piotnetforms-field-type-select piotnetforms-field-group piotnetforms-column  piotnetforms-field-group-repayment_period piotnetforms-col-100">
@@ -947,7 +978,7 @@
             <div class="swiper-pagination"></div>
          </div>
     </section>
-    <section id="Hours">
+    <section id="Hours" loading="lazy">
         <div class="container">
             <div class="row title">
                 <div class="col-lg-12 text-center">
@@ -1028,26 +1059,27 @@
             </div>
             <div class="row" data-aos="fade-up">
 
-<div class="col-lg-8 col-sm-12">
+<div class="col-lg-8 col-md-8">
   <iframe class="mb-4 mb-lg-0" src="https://maps.google.com/maps?q=HONDA+EASTERN,+Hospital+Universiti+Sains+Malaysia,+Lot+2181+&+2182,+Jalan+Pasir+Hor,+Kubang+Kerian,+16150+Kota+Bharu,+Kelantan&output=embed" frameborder="0" style="border:0; width: 100%; height: 100%; max-height: 1000px;" allowfullscreen></iframe>
 </div>
 
 
 
-<div class="col-lg-4 col-sm-12 social-box">
-    <h3 class="text-center">Ikuti Laman Sosial Untuk Promosi Terbaru</h3>
+<div class="col-lg-4 col-md-4 social-box">
+    <h5 class="text-center">Ikuti Laman Sosial Untuk Promosi Terbaru</h5>
+    <img class="qrImage" src="assets/img/QrCode.png">
+
         <div class="social-buttons">
-            <img class="qrImage" src="assets/img/QrCode.png">
-    <a href="https://www.facebook.com/HondaEasternAuto" class="btn facebook-btn">
+    <a href="https://www.facebook.com/HondaEasternAuto"  target="_blank" class="btn facebook-btn col-5 col-md-12">
         <i class="fab fa-facebook"></i> Facebook
     </a>
-    <a href="http://www.tiktok.com/@hondaeasterngroup" class="btn tiktok-btn">
+    <a href="http://www.tiktok.com/@hondaeasterngroup"  target="_blank" class="btn tiktok-btn col-5 col-md-12">
         <i class="fab fa-tiktok"></i> Tiktok
     </a>
-    <a href="https://api.whatsapp.com/send?phone=601110918380&text=Hi Honda Eastern Auto, Saya ingin bertanyakan soalan mengenai..." class="btn whatsapp-btn">
+    <a href="https://api.whatsapp.com/send?phone=601110918380&text=Hi Honda Eastern Auto, Saya ingin bertanyakan soalan mengenai..."   target="_blank" class="btn whatsapp-btn col-5 col-md-12">
         <i class="fab fa-whatsapp"></i> WhatsApp
     </a>
-    <a href="https://www.waze.com/live-map/directions/my/kelantan/kota-bharu/honda-eastern-automobile-(kota-bharu)?navigate=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location&to=place.ChIJAx7aKIextjERr3p3oaB_vX0" class="btn waze-btn">
+    <a href="https://www.waze.com/live-map/directions/my/kelantan/kota-bharu/honda-eastern-automobile-(kota-bharu)?navigate=yes&utm_campaign=default&utm_source=waze_website&utm_medium=lm_share_location&to=place.ChIJAx7aKIextjERr3p3oaB_vX0"   target="_blank" class="btn waze-btn col-5 col-md-12">
         <i class="fab fa-waze"></i> Lokasi
     </a>
 </div>
