@@ -11122,7 +11122,7 @@ header.masthead .container p
 .page-section {
   padding: 4rem;
 }
-.page-section h2.section-heading, .page-section .section-heading.h2 {
+.page-section h1.section-heading, .page-section .section-heading.h1 {
   font-size: 3.5rem;
   margin-top: 0;
   margin-bottom: 1rem;
@@ -11322,8 +11322,10 @@ text-align: center;
   padding-bottom: 6rem;
   text-align: center;
 }
-.Product-modal .modal-content h2, .Product-modal .modal-content .h2 {
+.Product-modal .modal-content h3, .Product-modal .modal-content .h3 {
   line-height: 3rem;
+      margin-top: 10px;
+    margin-bottom: 25px;
 }
 .Product-modal .modal-content p.item-intro {
   font-style: italic;
@@ -11338,6 +11340,10 @@ text-align: center;
 }
 .Product-modal .modal-content img {
   margin-bottom: 0.1rem;
+  /* width: 100%; */
+  height: min-content;
+  min-height: 150px;
+  object-fit: cover; 
 }
 .Product-modal .close-modal {
   position: absolute;
@@ -11365,22 +11371,24 @@ text-align: center;
 
 
 .Product-modal .type-r-logo {
-  font-family: Arial, sans-serif;
-  font-weight: bold;
   display: inline-flex;
-  align-items: center;
+  align-items: baseline;
 }
 
 .Product-modal .type-r-logo .type {
   color: black;
-  font-size: 2rem; /* Adjust the size as needed */
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 0.1rem;
   margin-right: 5px;
 }
 
 .Product-modal .type-r-logo .r {
   color: red;
-  font-size: 3rem; /* Adjust the size as needed */
-  font-weight: 700; /* Making 'R' bold */
+  font-size: 3rem; /* Adjust this to match the size of the "R" in your image */
+  font-weight: bold;
+  vertical-align: top;
+  font-style: italic;  /* Making 'R' bold */
 }
 
 .Product-modal .modal-body ul.list-unstyled .car-models {
@@ -11396,16 +11404,24 @@ text-align: center;
   margin-bottom: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s;
+  align-items: center; /* Centers content horizontally */
+  text-align: center;    
+   display: flex;
+  flex-direction: column; /* Stacks items vertically */
 }
 
 .Product-modal .modal-body ul.list-unstyled .car-model:hover {
   transform: scale(1.02);
 }
 
-.Product-modal .modal-body ul.list-unstyled h1 {
-margin-top: 10px;
-margin-bottom: 25px;
+/*For Mobile Car List*/
+
+.Product-modal .modal-body ul.list-unstyled .car-model h2 {
+  font-weight: bold;
+  color: #333;
+  text-align: left; /* Align text to the left */
 }
+
 
 .Product-modal .modal-body ul.list-unstyled .car-model h2 {
   font-weight: bold;
@@ -11420,6 +11436,12 @@ margin-bottom: 25px;
 
 }
 
+.Product-modal .modal-body .no-bullets {
+  list-style-type: none; /* Removes the bullets */
+  padding: 0; /* Removes default padding */
+  margin: 0; /* Removes default margin */
+}
+
 .Product-modal .modal-body ul.list-unstyled .car-model .price {
   font-weight: bold;
   color: #000;
@@ -11427,7 +11449,12 @@ margin-bottom: 25px;
 
 }
 
+.Product-modal .modal-body ul.list-unstyled .car-model .car-name 
+{
+  font-size: 20px;
+}
 
+  
 .Product-modal .SpecificationsTable
 {
 display: block;
@@ -11456,7 +11483,21 @@ display: none;
     text-align: center; /* Center-align the text */
     margin-bottom: 1.0rem;
   }
-  
+  .Product-modal .modal-content img {
+    margin-right: 0.1rem;
+    margin-bottom: 0.1rem;
+     width: 100%;
+    max-height: 250px;
+    object-fit: cover;
+  }
+
+  .Product-modal .modal-content .car-display {
+    margin-right: 0.1rem;
+    margin-bottom: 0.1rem;
+     width: 100%;
+    object-fit: contain;
+  }
+
 }
 
 .prime-cta-black {

@@ -55,6 +55,51 @@
   }
 
 })(); // End of use strict
+
+$(document).ready(function() {
+  var owl = $('#promotion .owl-carousel');
+  console.log(owl);
+  owl.owlCarousel({
+    margin: 10,
+    nav: true,
+    loop: true,
+    responsive: { 
+      0: {
+        items: 1
+      },
+      600: {
+        items: 2
+      },
+      1400: {
+        items: 3
+      }
+    }
+  });
+});
+
+$(document).ready(function() {
+  console.log("Owl carousel");
+  var owl2 = $('#services .mobile-services .owl-carousel');
+  console.log(owl2);
+  // Target only the owl-carousel inside mobile-services
+  owl2.owlCarousel({
+    margin: 10,
+    nav: true,
+    autoplay:true,
+    autoplayTimeout:4000,
+    loop: true,
+    lazyLoad:true,
+    responsive: { 
+      0: {
+        items: 1
+      },
+      770: {
+        items: 2
+      },
+    }
+  })
+})
+
 document.addEventListener("DOMContentLoaded", function() {
 
     // Navbar shrink function
@@ -141,30 +186,32 @@ function calculate() {
     const amount = parseRMToFloat(document.getElementById('hargakereta').value);
     const downpayment = (document.getElementById('downpaymentval').value);
     const loanAmount = amount - downpayment;
-    console.log("amount : " +  loanAmount);
-    console.log("cccsa : " +  downpayment);
+    //console.log("amount : " +  loanAmount);
+    //console.log("downpayment : " +  downpayment);
 
     var value = jQuery('#form-field-annual_interest').val();
 
     const term = parseFloat(document.getElementById('form-field-repayment_period').value);
     const interest = value;
-    console.log("Term : " +  term.toFixed(2));
+    //console.log("Term : " +  term.toFixed(2));
 
 
 
     const totalInterest = (interest/100) * loanAmount *term;
     const monthly = (loanAmount+totalInterest) / (term*12);
  
-    console.log("loanAmount : " +  loanAmount);
-    console.log("interestd : " +  interest);
+    //console.log("loanAmount : " +  loanAmount);
+    //console.log("interestd : " +  interest);
 
     const totalPaid = monthly * term*12;
 
-    console.log("Monthly : " +  monthly.toFixed(2));
-    console.log("Total :  "+ totalPaid.toFixed(2));
-    console.log("Interest : " + totalInterest.toFixed(2));
+    //console.log("Monthly : " +  monthly.toFixed(2));
+    //console.log("Total :  "+ totalPaid.toFixed(2));
+    //console.log("Interest : " + totalInterest.toFixed(2));
 
-    
+    if(monthly >0)
+    {
+
     const formattedMonthly = "RM " + monthly.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     const formattedTotal = "RM " + totalPaid.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     const formattedInterest = "RM " + totalInterest.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -172,6 +219,13 @@ function calculate() {
     document.getElementById('monthval').textContent = formattedMonthly;
     document.getElementById('totalPaid').textContent = formattedTotal;
     document.getElementById('totalInterest').textContent = formattedInterest;
+    }
+    else
+    {
+      document.getElementById('monthval').textContent = null;
+      document.getElementById('totalPaid').textContent = null;
+      document.getElementById('totalInterest').textContent = null;
+    }
 }
 
 function calculatePayment(finAmount, finMonths, finInterest){
@@ -3712,6 +3766,7 @@ if (element) {
 
 function openModal() {
   document.getElementById("myModalPromotion").style.display = "block";
+  document.body.style.overflow = "hidden"; // Disable scrolling
 
   document.addEventListener('keydown', evt => {
     if (evt.key === 'Escape') {
@@ -3722,6 +3777,7 @@ function openModal() {
 
 function closeModal() {
   document.getElementById("myModalPromotion").style.display = "none";
+  document.body.style.overflow = "auto"; // Enable scrolling
 
 
 document.addEventListener('keydown', evt => {
@@ -3765,6 +3821,7 @@ function showSlides(n) {
 
 function openModal2() {
   document.getElementById("myModalInsurance").style.display = "block";
+  document.body.style.overflow = "hidden"; // Disable scrolling
 
   document.addEventListener('keydown', evt => {
     if (evt.key === 'Escape') {
@@ -3775,6 +3832,7 @@ function openModal2() {
 
 function closeModal2() {
   document.getElementById("myModalInsurance").style.display = "none";
+  document.body.style.overflow = "auto"; // Enable scrolling
 
 
 document.addEventListener('keydown', evt => {
@@ -3801,14 +3859,17 @@ function showSlides2(n) {
   var slides = document.getElementsByClassName("mySlides2");
   var dots = document.getElementsByClassName("demo2");
   var captionText = document.getElementById("caption2");
-  if (n > slides.length) {slideIndex = 1}
-  if (n < 1) {slideIndex2 = slides.length}
+
+  if (n > slides.length) 
+  {slideIndex2 = 1}
+  else if (n < 1) {slideIndex2 = slides.length}
   for (i = 0; i < slides.length; i++) {
       slides[i].style.display = "none";
   }
   for (i = 0; i < dots.length; i++) {
       dots[i].className = dots[i].className.replace(" active", "");
   }
+  
   slides[slideIndex2-1].style.display = "block";
 
 }
@@ -3909,3 +3970,68 @@ document.addEventListener('DOMContentLoaded', function () {
     articles.forEach(article => swiperWrapper.appendChild(article));
 });
 
+
+//INTEREST LOAN CALCULATOR JS
+
+(function ($) {
+  var WidgetpiotnetformsFormBuilderHandlerRangeSliderannual_interest = function ($scope, $) {
+      var $elements = $scope.find('[data-piotnetforms-range-slider]');
+
+      if (!$elements.length) {
+          return;
+      }
+
+      $.each($elements, function (i, $element) {
+          let rangerOptions = $(this).attr('data-piotnetforms-range-slider');
+          if ($($element).siblings('.irs').length == 0) {
+              var slider = $('#form-field-annual_interest').ionRangeSlider({
+                  skin: "round",
+                  type: "single",
+                  grid: true,
+                  step: 0.01,
+                  min: 1.50,
+                  max: 6.00,
+                  from: 3.5,
+                  postfix: "%",
+                  onChange: function (data) {
+                      // Update the text box with the current slider value
+                      $('#interest-input').val(data.from);
+                  }
+              }).data("ionRangeSlider");
+
+              // When text box value changes, update the slider
+              $('#interest-input').on('input', function () {
+                  var inputVal = $(this).val();
+                  if (inputVal >= 1.50 && inputVal <= 6.00) {
+                      slider.update({ from: inputVal });
+                  }
+              });
+
+              $($element).change();
+          }
+      });
+  };
+
+  $(window).on('elementor/frontend/init', function () {
+      elementorFrontend.hooks.addAction('frontend/element_ready/piotnetforms-field.default', WidgetpiotnetformsFormBuilderHandlerRangeSliderannual_interest);
+  });
+
+  $(document).on('piotnet-widget-init-Piotnetforms_Field', '[data-piotnet-editor-widgets-item-root]', function(){
+      WidgetpiotnetformsFormBuilderHandlerRangeSliderannual_interest($(this), $);
+  });
+
+  $(window).on('load', function(){
+      WidgetpiotnetformsFormBuilderHandlerRangeSliderannual_interest($(document), $);
+  });
+
+}(jQuery)); 
+
+(function() {
+  if (typeof clearValidity === 'undefined') {
+    function clearValidity(i) {
+      jQuery(i).closest(".piotnetforms-field-subgroup").find(".piotnetforms-field-option input").each(function() {
+        jQuery(this)[0].setCustomValidity("");
+      });
+    }
+  }
+})();

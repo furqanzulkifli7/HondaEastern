@@ -2102,6 +2102,7 @@ body {font-family: 'Montserrat';}body {line-height: 1.6;font-size: 14px;font-wei
 .modalPromotion img
 {
   width: 100%;
+  min-height: 500px;
 }
 
 
@@ -2667,7 +2668,7 @@ header.masthead .text-container p {
     opacity: 0;
     color: white;
     animation: fadeIn 2s ease-in forwards;
-    text-align: justify;
+    text-align: center;
   }
   header.masthead .text-container p {
     margin: 0;
