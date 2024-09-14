@@ -5397,7 +5397,7 @@ textarea.form-control-lg {
   width: 100%;
   color: var(--bs-modal-color);
   pointer-events: auto;
-  background-color: #f5f5f5;
+  background-color: #f0eded;
   background-clip: padding-box;
   border: var(--bs-modal-border-width) solid var(--bs-modal-border-color);
   border-radius: var(--bs-modal-border-radius);
@@ -11042,7 +11042,18 @@ background-size: cover;
   opacity: 0;
   color: white;
   animation: fadeIn 2s ease-in forwards;
+  background-attachment: scroll;
+
 }
+
+/*Iphone Problem*/
+header.masthead .background-image {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center center; 
+}
+ 
 @keyframes fadeImage {
   0% {
     opacity: 0;
@@ -11091,6 +11102,8 @@ header.masthead .container p
 @media (min-width: 768px) {
   header.masthead {
     padding-top: 17rem;
+    background-attachment:fixed; 
+    /*Iphone Problem*/
     padding-bottom: 12.5rem;
   }
   header.masthead .masthead-subheading {
@@ -11230,11 +11243,6 @@ text-align: center;
   font-weight: 700;
   margin-bottom: 0;
 }
-#Product .Product-item2 .Product-caption .Product-caption-subheading {
-  font-style: italic;
-  font-family: "Roboto Slab", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-}
-
 
 #Product .Product-item {
   max-width: 26rem;
@@ -11486,9 +11494,11 @@ display: none;
   .Product-modal .modal-content img {
     margin-right: 0.1rem;
     margin-bottom: 0.1rem;
-     width: 100%;
+    width: 100%;
+    height: auto; /* Ensure height adjusts automatically */
     max-height: 250px;
     object-fit: cover;
+    display: block; /* Prevent inline spacing issues */
   }
 
   .Product-modal .modal-content .car-display {
@@ -11780,13 +11790,19 @@ section#contact .btn {
   height: fit-content;
 
 }
-
+section#contact .btn:hover {
+  background-color: #e9a99b;
+}
 section#contact .facebook-btn {
   background-color: #17397f;
 }
 
 section#contact .tiktok-btn {
   background-color: #69c9d0;
+}
+
+section#contact .tiktok-btn .img-tiktok{
+  max-width: 100px;
 }
 
 section#contact .whatsapp-btn {
@@ -12311,6 +12327,16 @@ margin-bottom: 20px;
 {
   color: grey;
 }
+
+#About h4
+{
+  color:grey;
+}
+
+#About #TeamSales
+{
+background-color: #f0eded;
+}
 #About .card__container {
   padding-block: 5rem;
 }
@@ -12329,7 +12355,7 @@ margin-bottom: 20px;
 
 #About .card__image {
   position: relative;
-  background-color: rgb(243 239 239);
+  background-color: white;
   padding-top: 1.5rem;
   text-align: center;
   /*margin-bottom: -.75rem;*/
@@ -12540,7 +12566,7 @@ margin-bottom: 20px;
   width: 100%;
   height: 100%;
   overflow: auto; 
-  background-color: rgba(0,0,0,0.4); 
+  background-color: rgb(7 7 7);
   padding-top: 60px;
 }
 
@@ -12606,7 +12632,7 @@ margin-bottom: 20px;
 }
 .grid-item {
   position: relative;
-  background-color: rgba(222,239,223,255);
+  background-color: white;
   padding: 20px;
   border-radius: 10px;
   text-align: center;

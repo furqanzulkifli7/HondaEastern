@@ -165,7 +165,15 @@ function updateLoanAmount() {
 	document.getElementById('hargakereta').value = "RM "+ carModel;
   const hargaKeretaSpan = document.getElementById('hargakereta');
 
-  hargaKeretaSpan.textContent = `${parseFloat(carModel).toFixed(2)}`;
+
+  console.log(carModel + " VALUE")
+
+    // Check if carModel is a number
+    if (!isNaN(carModel) && carModel.trim() !== '') {
+      hargaKeretaSpan.textContent = `${parseFloat(carModel).toFixed(2)}`;
+    } else {
+      hargaKeretaSpan.textContent = '0';;
+    }
 
   document.getElementById('downpaymentval').value = 0;
 
@@ -4035,3 +4043,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 })();
+
+

@@ -160,7 +160,6 @@
 @media (max-width: 768px) {
   #img-logo {
     width: 181px;
-    height: 41px;
   }
 }
 
@@ -2656,7 +2655,7 @@ header.masthead .text-container p {
   letter-spacing: 1.2px;
 }
 
-@media (max-width: 768px) 
+@media (max-width: 767px) 
 {
   header.masthead .text-container {
     padding-left: 20px;
@@ -2674,6 +2673,10 @@ header.masthead .text-container p {
     margin: 0;
     letter-spacing: 1.2px;
   }
+  header.masthead .mobile-hide
+  {
+    display: none;
+  }
 }
 
 @keyframes fadeIn {
@@ -2685,4 +2688,53 @@ header.masthead .text-container p {
       opacity: 1;
       transform: translateY(0);
   }
+}
+
+.fade-in-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  animation: fadeInLeft 2.5s ease-in-out forwards;
+}
+
+.fade-in-right {
+  opacity: 0;
+  transform: translateX(50px);
+  animation: fadeInRight 2.5s ease-in-out forwards;
+}
+
+#salesTeam
+{
+  background: white;
+  background-position: center;
+  background-size: auto;
+}
+
+@keyframes fadeInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 768px) 
+{
+#salesTeam .mobile-hide
+{
+  display: none;
+}
 }
