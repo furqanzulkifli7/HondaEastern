@@ -126,14 +126,6 @@
     background-blend-mode: multiply;
 }
 
-  #Product .container-mobile {
-    display: none;
-  }
-
-  /* Show the #Product section for screens larger than 768px */
-  #Product .container {
-      display: block;
-  }
 }
 
 /* Show the car-models-mobile for screens 768px or smaller */
@@ -145,15 +137,6 @@
     background-color:whitesmoke;
     background-blend-mode: multiply;
 }
-
-  #Product .container-mobile {
-    display: block;
-  }
-
-  /* Hide the #Product section for screens 768px or smaller */
-  #Product .container {
-      display: none;
-  }
 }
 
 

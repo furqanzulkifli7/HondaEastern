@@ -3963,6 +3963,28 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+//Mobile toggle for product
+window.addEventListener('DOMContentLoaded', () => {
+  const container = document.querySelector('#Product .container');
+  const containerMobile = document.querySelector('#Product .container-mobile');
+
+  function toggleContainers() {
+    if (window.innerWidth <= 768) {
+      container.style.display = 'none';
+      containerMobile.style.display = 'block';
+    }
+     else {
+      container.style.display = 'block';
+      containerMobile.style.display = 'none';
+    }
+  }
+
+  toggleContainers();
+
+  window.addEventListener('resize', toggleContainers);
+});
+
+
 document.addEventListener('DOMContentLoaded', function () {
     const swiperWrapper = document.querySelector('.swiper-wrapper');
     const articles = Array.from(swiperWrapper.children);
