@@ -10,5 +10,5 @@ Author : Furqan Zulkifli
 
 version 2.0.0
 Author : Furqan Zulkifli
-- Visit website throug here https://www.hondaeasternkelantan.com/
+- Visit website through here https://www.hondaeasternkelantan.com/
 ---
