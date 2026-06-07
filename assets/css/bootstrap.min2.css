@@ -11302,11 +11302,11 @@ text-align: center;
 }
 
 .img-fluid2 {
-  max-width: 100%;
-  height: auto;
-
+    width: 100%;
+    height: 300px; /* Adjust this height to fit your layout perfectly */
+    object-fit: cover;
+    object-position: center;
 }
-
 .img-servis
 {
   width: 150px;
