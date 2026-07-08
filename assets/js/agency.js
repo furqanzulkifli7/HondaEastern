@@ -3713,6 +3713,8 @@ let swiperCards = new Swiper(".card__content", {
 
   autoplay: {
     delay: 5000,
+        disableOnInteraction: false,
+    pauseOnMouseEnter: false,
   },
 
   pagination: {
@@ -3735,7 +3737,9 @@ let swiperCards = new Swiper(".card__content", {
     },
   },
 });
+const totalSlides = document.querySelectorAll(".card__article").length;
 
+swiperCards.slideToLoop(Math.floor(Math.random() * totalSlides), 0);
 // Modal functionality
 const gridModal = document.getElementById("gridModal");
 const openGridBtn = document.getElementById("openGridBtn");
