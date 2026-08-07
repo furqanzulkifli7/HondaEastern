@@ -361,6 +361,12 @@ const data = {
       "options": [
         {"label": "Type R", "value": "399900"},
       ]
+    },
+    {
+      "label": "Honda Prelude",
+      "options": [
+        {"label": "Prelude 2.0L e:HEV", "value": "278000"},
+      ]
     }
   ]
 };
@@ -3615,6 +3621,113 @@ const carData = {
       ]
     },
   },
+  'Honda Prelude'         :{
+    'Variant 1': {
+      'Engine & Perfomance': [
+          '2.0 litre DOHC i-VTEC Atkinson cycle four-cylinder engine (e:HEV)',
+          '1,993 Displacement (CC)',
+          'Engine : 141 PS at 6,000 rpm, 182 Nm at 4,500 rpm',
+          'Electric Motor : 184 PS, 315 Nm',
+          'Total System Output : 203 PS (149 kW)',
+          'Lithium-Ion Battery : 1.05 kWh (72 cell)',
+          'e-CVT with S+ Shift',
+          'Electric Power Steering (EPS)',
+          '2 Wheel Drive'
+      ],
+      'Perfomance' :[
+        '0-100 km/h in 8.2 seconds',
+        'Maximum speed of 188 (km/h)',
+        'Fuel consumption of 4.2 (L/100km)'
+      ],
+      'Brake System': [
+        'Front :	Brembo Ventilated Disc (13.8 inch)',
+        'Rear :	Disc (12 inch)',
+        'Parking Brake :	Electric Parking Brake'
+      ],
+      'Suspension System':[
+        'Front : Dual Axis Strut',
+        'Rear : Multi Link',
+        'Adaptive Damper System: ✓'
+      ],
+      'Dimension': [
+        'Length (mm)	4,522',
+        'Width (mm)	1,880',
+        'Height (mm)	1,355',
+        'Wheelbase (mm)	2,605',
+        'Curb Weight (kg)	1,469',
+        'Seating Capacity	2+2',
+        'Boot Capacity (Litre)	264'
+      ],
+      'Tyres' :[
+        'Wheel Type : Alloy (Berlina Black)',
+        'Wheel Size :	19',
+        'Tyre Size	: 235/40 R19',
+        'Spare Tyre Size : Temporary Repair Kit'
+      ],
+      'Exterior' : [
+        'Headlights	: LED',
+          'Auto Headlights : ✓',
+          'Active Cornering Lights : ✓',
+          'Daytime Running Lights	: LED',
+          'Side Mirrors With Turning Lights : ✓',
+          'Outer Door Handle : Body Colour',
+          'Rear Combi Lights :  (LED)',
+          'Antenna	: Shark Fin (Body Colour)',
+          'Exterior Colours : Winter Frost Pearl, Rallye Red, Crystal Black Pearl'
+      ],
+      'Control & Interior' :[
+        'Walk Away Auto Lock : ✓',
+        'Smart Entry with Push Start Button : ✓',
+        'Cruise Control : Adaptive Cruise Control',
+        'Drive Mode Selector: Comfort, GT, Sport & Individual Mode',
+        'Meter Cluster : 10.2” Full Digital TFT Meter',
+        'Air Conditioning	: Dual Auto',
+        'Auto Dim Rearview Mirror : ✓',
+        'Steering Wheel :	Flat-Bottom Leather Wrapped',
+        'Front Seat Adjustment : 6-Way Driver, 4-Way Passenger',
+        'Auto Front Wiper  : ✓',
+        'Rear Wiper System : ✓',
+        'Steering Wheel Switch Audio Control : ✓',
+        'Pedal Pad Type	: Sport',
+        'Auto Retractable Door Mirror : ✓',
+        'Centre Console with Armrest	: ✓',
+        'Wireless Charger : ✓',
+        'Active Sound Control : ✓',
+        'Coasting Control Operation : ✓'
+      ],
+      'Audio':[
+        'Audio System	Standard Audio : 9” Display Audio with Google Built-in',
+        'Apple CarPlay™ & Android Auto™ Connectivity* : ✓  Wireless',
+        'USB Port	: 2 (Type-C)',
+        'Hands‑Free Telephone (HFT) : ✓',
+        'Speakers	: 8 (BOSE Premium Sound System)',
+        'Bluetooth	: ✓'
+      ],
+      'Safety & Security':[
+        'Dual Front SRS Airbags: ✓',
+        'Side Airbags: ✓',
+        'Side Curtain Airbags: ✓',
+        'Driver Knee Airbag: ✓ (7 Airbags in total)',
+        'Front & Rear Seatbelt Reminder: ✓',
+        'ISOFIX I‑Size Type: ✓',
+        'Auto Door Lock: ✓',
+        'Vehicle Stability Assist (VSA): ✓',
+        'Agile Handle Assist (AHA): ✓',
+        'Anti‑lock Braking System (ABS): ✓',
+        'Electronic Brake Distribution (EBD): ✓',
+        'Auto Brake Hold (ABH): ✓',
+        'Hill Start Assist (HSA): ✓',
+        'Front Sensors: ✓ (4)',
+        'Reverse Sensors: ✓ (4)',
+        'Reverse Camera: ✓',
+        'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LCDN): ✓',
+        'Blind Spot Information with Cross Traffic Monitor: ✓',
+        'Honda CONNECT (Safety, Security, Convenience): ✓',
+        'Driver Attention Monitor: ✓',
+        'Security Alarm with Immobiliser: ✓'
+      ]
+    },
+  },
   // Add more car models here
 };
 
@@ -3683,6 +3796,7 @@ function populateTabs() {
     'Crv3' : 'Honda CRV',
     'Crv4' : 'Honda CRV',
     'TyperR1'  : 'Honda RS',
+    'Prelude1' : 'Honda Prelude',
 };
 
 
