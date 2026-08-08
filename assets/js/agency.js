@@ -58,12 +58,11 @@
 
 $(document).ready(function() {
   var owl = $('#promotion .owl-carousel');
-  console.log(owl);
   owl.owlCarousel({
     margin: 10,
     nav: true,
     loop: true,
-    responsive: { 
+    responsive: {
       0: {
         items: 1
       },
@@ -75,6 +74,16 @@ $(document).ready(function() {
       }
     }
   });
+
+  // Owl locks in each item's width when it initialises. On a cold load the promo
+  // images have not downloaded yet, so they measure 0 wide, the col-xl-auto wrapper
+  // shrinks to nothing, and every item gets width 0 - the carousel renders blank
+  // until you refresh and the images come from cache. Re-measure once they arrive.
+  var refresh = function() { owl.trigger('refresh.owl.carousel'); };
+  owl.find('img').each(function() {
+    if (!this.complete) $(this).one('load error', refresh);
+  });
+  $(window).on('load', refresh);
 });
 
 $(document).ready(function() {
