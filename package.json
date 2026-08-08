@@ -5,9 +5,14 @@
   "description": "Honda Eastern static site",
   "scripts": {
     "dev": "live-server --port=3000 --no-browser --wait=200",
-    "start": "live-server --port=3000 --wait=200"
+    "start": "live-server --port=3000 --wait=200",
+    "prices": "node tools/sync-prices.js",
+    "prices:check": "node tools/sync-prices.js --check",
+    "images": "node tools/optimise-images.js && node tools/add-image-dims.js",
+    "images:dry": "node tools/optimise-images.js --dry"
   },
   "devDependencies": {
-    "live-server": "^1.2.2"
+    "live-server": "^1.2.2",
+    "sharp": "^0.35.3"
   }
 }

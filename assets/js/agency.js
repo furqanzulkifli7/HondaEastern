@@ -330,12 +330,12 @@ const data = {
       ]
     },
     {
-      "label": "Honda WR-V",
+      "label": "Honda Civic",
       "options": [
-        {"label": "WR-V 1.5L S", "value": "89900"},
-        {"label": "WR-V 1.5L T E", "value": "95900"},
-        {"label": "WR-V 1.5L T V", "value": "99900"},
-        {"label": "WR-V 1.5L RS", "value": "107900"}
+        {"label": "Civic 1.5L E", "value": "133900"},
+        {"label": "Civic 1.5L V", "value": "144900"},
+        {"label": "Civic 1.5L RS", "value": "149900"},
+        {"label": "Civic e:HEV 2.0L RS", "value": "167900"}
       ]
     },
     {
@@ -343,38 +343,37 @@ const data = {
       "options": [
         {"label": "HR-V 1.5L S", "value": "115900"},
         {"label": "HR-V 1.5L T E", "value": "130900"},
-        {"label": "HR-V 1.5L T V", "value": "135900"},
-        {"label": "HR-V 1.5L e:HEV RS", "value": "141900"}
+        {"label": "HR-V 1.5L T V", "value": "137900"},
+        {"label": "HR-V 1.5L e:HEV RS", "value": "143900"}
       ]
     },
     {
-      "label": "Honda Civic",
+      "label": "Honda WR-V",
       "options": [
-        {"label": "Civic 1.5L E", "value": "131900"},
-        {"label": "Civic 1.5L V", "value": "144900"},
-        {"label": "Civic 1.5L RS", "value": "151900"},
-        {"label": "Civic e:HEV 2.0L RS", "value": "167900"}
+        {"label": "WR-V 1.5L S", "value": "89900"},
+        {"label": "WR-V 1.5L E", "value": "95900"},
+        {"label": "WR-V 1.5L V", "value": "99900"},
+        {"label": "WR-V 1.5L RS", "value": "107900"}
       ]
     },
     {
       "label": "Honda CR-V",
       "options": [
-        {"label": "CR-V 1.5L S", "value": "159000"},
-        {"label": "CR-V 1.5L T E", "value": "169900"},
-        {"label": "CR-V 1.5L T V", "value": "181900"},
+        {"label": "CR-V 2.0L e:HEV E", "value": "178200"},
+        {"label": "CR-V 1.5L V AWD", "value": "181900"},
         {"label": "CR-V 2.0L e:HEV RS", "value": "195900"}
       ]
     },
     {
-      "label": "Honda Civic Type-R",
+      "label": "Honda Civic Type R",
       "options": [
-        {"label": "Type R", "value": "399900"},
+        {"label": "Type R", "value": "399900"}
       ]
     },
     {
       "label": "Honda Prelude",
       "options": [
-        {"label": "Prelude 2.0L e:HEV", "value": "278000"},
+        {"label": "Prelude 2.0L e:HEV", "value": "278000"}
       ]
     }
   ]
@@ -2928,17 +2927,18 @@ const carData = {
   'Honda CRV'             : {
     'Variant 1': {
       'Engine & Perfomance': [
-          '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
-          '193 PS (142 hp) at 6,000 rpm, 243 Nm at 5,000 rpm',
+          '2.0 litre DOHC i-VTEC (Atkinson Cycle) four-cylinder engine',
+          '148 PS (146 hp) at 6,100 rpm, 190 Nm at 4,500 rpm',
+          '184 PS (181 hp, or 135 kW) at 5,000 to 8,000 rpm and 335 Nm from 0-2,000 rpm e-motor',
           'Direct Fuel Injection (PGM‑FI)',
-          'Continuous Variable Transmission (CVT)',
+          'Electric continuously variable transmission (e-CVT)',
           'Electric Power Steering (EPS)',
           '2 Wheel Drive'
       ],
       'Perfomance' :[
-        '0-100 km/h in 9.7 seconds',
-        'Maximum speed of 200 (km/h)',
-        'Fuel consumption of 7.0 (L/100km)'
+        '0-100 km/h in 9.0 seconds',
+        'Maximum speed of 187 (km/h)',
+        'Fuel consumption of 5.0 (L/100km)'
       ],
       'Brake System': [
         'Front :	Ventilated Disc',
@@ -2957,152 +2957,7 @@ const carData = {
         'Wheelbase (mm)	2,701',
         'Tread Front (mm)	1,611',
         'Tread Rear (mm)	1,627',
-        'Curb Weight (kg)	1,598',
-        'Fuel Tank Capacity (litre) 57',
-        'Boot Capacity (Litre)	589'
-      ],
-      'Tyres' :[
-        'Wheel Type : Alloy',
-        'Wheel Size :	17"Silver',
-        'Tyre Size	: 235/65R17',
-        'Spare Tyre Size : 17'
-      ],
-      'Exterior' : [
-        'Headlights	: LED',
-          'Auto Headlights : ✓',	
-          'Active Cornering Lights : -',
-          'Daytime Running Lights	: LED',
-          'Front Fog Lights : -',
-          'Rear Fog Light : -',
-          'Front LED Sequential Turn Signals ✓',
-          'Side Mirrors With Turning Lights : Body Colour with LED Turn Light',	
-          'Outer Door Handle : Body Colour',
-          'Rear Combi Lights :  (LED)',
-          'Antenna	: Shark Fin (Body Colour)',
-          'Roof Rail : -',
-          'Hands‑Free Power Tailgate With Walkaway Close : -',
-          'Active Shutter Grille : -',
-          'Tailpipe Chrome Finisher : -'
-      ],
-      'Control & Interior' :[
-        'Remote Engine Start : ✓',
-        'Walk Away Auto Lock : ✓',
-        'Smart Entry with Push Start Button : ✓',
-        'Key Card : -',
-        'Head up Display : -',
-        'Paddle Shift : -',
-        'Deceleration Selector Paddle :	-',
-        'Cruise Control : ✓',
-        'ECON Button : ✓',
-        'SPORT Button: - ',
-        'Meter Cluster : 7” TFT Meter',
-        'Air Conditioning	: Dual Auto',
-        'Rear Air Conditioning Ventilation : ✓',
-        'Auto Dim Rearview Mirror : -',
-        'Steering Wheel :	Urethane',
-        'Upholstery	: Fabric',
-        '4‑Way Assistant Power Seat: -',
-        '8‑Way Driver Power Seat : -',
-        'Memory Seat : -',
-        '2nd Row Sliding Seat : ✓',
-        'Auto Front Wiper : -',
-        'Rear Wiper System: ✓',
-        'Pedal Pad Type	: Normal',
-        'Power Adjustable Door Mirror : ✓',
-        'Power Retractable Door Mirror : ✓',
-        'Centre Console with Armrest	: ✓',
-        'Auto Dim Rearview Mirror : ✓',
-        'Front Roof Ambient Light : -',
-        'Front Foot Ambient Light : -',
-        'Cup Holder Light : -',
-        'Front Door Inner Handle Light : -',
-        'Front Door Inner Handle Line Illumination : -',
-        'Wireless Charger (15W) : -',
-        'Rear USB Charger : 2'
-      ],
-      'Audio':[
-        'Audio System	Standard Audio : 7” Display Audio',
-        'Apple CarPlay™ & Android Auto™ Connectivity* : ✓',
-        'USB Port	: 1',
-        'Hands‑Free Telephone (HFT) : ✓',
-        'Speakers	: 8',
-        'Bluetooth	: ✓'
-      ],
-      'Safety & Security':[
-        'Dual Front SRS Airbags: ✓',
-        'Side Airbags: ✓',
-        'Side Curtain Airbags: ✓',
-        'Knee Airbags: ✓',
-        'Driver Seatbelt Reminder: ✓',
-        'Assistant Seatbelt Reminder: ✓',
-        'Rear Seatbelt Reminder: ✓',
-        'Rear Seat Reminder: ✓',
-        'ISOFIX I‑Size Type: ✓',
-        'Auto Door Lock: ✓',
-        'Vehicle Stability Assist (VSA): ✓',
-        'Agile Handle Assist (AHA): ✓',
-        'Anti‑lock Braking System (ABS): ✓',
-        'Electronic Brake Distribution (EBD): ✓',
-        'Auto Brake Hold (ABH): ✓',
-        'Hill Start Assist (HSA): ✓',
-        'Hill Descent Control (HDC): ✓',
-        'Emergency Stop Signal (ESS): ✓',
-        'Front Sensors: -',
-        'Reverse Sensors: 4',
-        'Reverse Camera: Multi-angle',
-        'Multi View Camera System (360 Camera): -',
-        'Reverse Auto Tilt Mirror: -',
-        'Honda LaneWatch Camera (LWC): -',
-        'Forward Collision Warning (FCW): ✓',
-        'Collision Mitigation Braking System (CMBS): ✓',
-        'Lane Keep Assist System (LKAS): ✓',
-        'Lane Departure Warning (LDW): ✓',
-        'Road Departure Mitigation (RDM): ✓',
-        'Adaptive Cruise Control (ACC): ✓',
-        'Low Speed Follow (LSF): ✓',
-        'Auto High Beam (AHB): ✓',
-        'Adaptive Driving Beam (ADB): -',
-        'Lead Car Departure Notification System: ✓',
-        'Honda CONNECT (Safety, Security, Convenience): ✓',
-        'Driver Attention Monitor: ✓',
-        'Active Noise Control: ✓',
-        'Active Sound Control: -',
-        'Tire Pressure Monitoring System (TPMS): -',
-        'Security Alarm with Immobiliser: ✓'
-      ]
-    },
-    'Variant 2': {
-      'Engine & Perfomance': [
-          '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
-          '193 PS (142 hp) at 6,000 rpm, 243 Nm at 5,000 rpm',
-          'Direct Fuel Injection (PGM‑FI)',
-          'Continuous Variable Transmission (CVT)',
-          'Electric Power Steering (EPS)',
-          '2 Wheel Drive'
-      ],
-      'Perfomance' :[
-        '0-100 km/h in 9.7 seconds',
-        'Maximum speed of 200 (km/h)',
-        'Fuel consumption of 7.0 (L/100km)'
-      ],
-      'Brake System': [
-        'Front :	Ventilated Disc',
-        'Rear :	Solid Disc',
-        'Parking Brake :	Electric Parking Brake'
-      ],
-      'Suspension System':[
-        'Front : MacPherson Strut',
-        'Rear : Multi Link',
-        'Variable Gear Ratio (VGR): ✓'
-      ],
-      'Dimension': [
-        'Length (mm)	4,691',
-        'Width (mm)	1,866',
-        'Height (mm)	1,681',
-        'Wheelbase (mm)	2,701',
-        'Tread Front (mm)	1,611',
-        'Tread Rear (mm)	1,627',
-        'Curb Weight (kg)	1,616',
+        'Curb Weight (kg)	1,735',
         'Fuel Tank Capacity (litre) 57',
         'Boot Capacity (Litre)	589'
       ],
@@ -3115,32 +2970,32 @@ const carData = {
       'Exterior' : [
         'Headlights	: LED',
           'Auto Headlights : ✓',	
-          'Active Cornering Lights : -',
+          'Active Cornering Lights : ✓',
           'Daytime Running Lights	: LED',
           'Front Fog Lights : LED',
-          'Rear Fog Light : -',
+          'Rear Fog Light : ✓',
           'Front LED Sequential Turn Signals ✓',
           'Side Mirrors With Turning Lights : Body Colour with LED Turn Light',	
           'Outer Door Handle : Body Colour',
           'Rear Combi Lights :  (LED)',
           'Antenna	: Shark Fin (Body Colour)',
-          'Roof Rail : -',
+          'Roof Rail : ✓',
           'Hands‑Free Power Tailgate With Walkaway Close : ✓',
-          'Active Shutter Grille : -',
-          'Tailpipe Chrome Finisher : -'
+          'Active Shutter Grille : ✓',
+          'Tailpipe Chrome Finisher : ✓'
       ],
       'Control & Interior' :[
         'Remote Engine Start : ✓',
         'Walk Away Auto Lock : ✓',
         'Smart Entry with Push Start Button : ✓',
-        'Key Card : -',
-        'Head up Display : -',
-        'Paddle Shift : ✓',
-        'Deceleration Selector Paddle :	-',
+        'Key Card : ✓',
+        'Head up Display : ✓',
+        'Paddle Shift : -',
+        'Deceleration Selector Paddle :	✓',
         'Cruise Control : ✓',
         'ECON Button : ✓',
-        'SPORT Button: - ',
-        'Meter Cluster : 7” TFT Meter',
+        'SPORT Button: ✓',
+        'Meter Cluster : 10.2” TFT Meter',
         'Air Conditioning	: Dual Auto',
         'Rear Air Conditioning Ventilation : ✓',
         'Auto Dim Rearview Mirror : -',
@@ -3157,11 +3012,11 @@ const carData = {
         'Power Retractable Door Mirror : ✓',
         'Centre Console with Armrest	: ✓',
         'Auto Dim Rearview Mirror : ✓',
-        'Front Roof Ambient Light : -',
-        'Front Foot Ambient Light : -',
-        'Cup Holder Light : -',
-        'Front Door Inner Handle Light : -',
-        'Front Door Inner Handle Line Illumination : -',
+        'Front Roof Ambient Light : ✓',
+        'Front Foot Ambient Light : ✓',
+        'Cup Holder Light : ✓',
+        'Front Door Inner Handle Light : ✓',
+        'Front Door Inner Handle Line Illumination : ✓',
         'Wireless Charger (15W) : ✓',
         'Rear USB Charger : 2'
       ],
@@ -3195,8 +3050,8 @@ const carData = {
         'Front Sensors: 4',
         'Reverse Sensors: 4',
         'Reverse Camera: Multi-angle',
-        'Multi View Camera System (360 Camera): -',
-        'Reverse Auto Tilt Mirror: -',
+        'Multi View Camera System (360 Camera): ✓',
+        'Reverse Auto Tilt Mirror: ✓',
         'Honda LaneWatch Camera (LWC): ✓',
         'Forward Collision Warning (FCW): ✓',
         'Collision Mitigation Braking System (CMBS): ✓',
@@ -3205,18 +3060,18 @@ const carData = {
         'Road Departure Mitigation (RDM): ✓',
         'Adaptive Cruise Control (ACC): ✓',
         'Low Speed Follow (LSF): ✓',
-        'Auto High Beam (AHB): ✓',
-        'Adaptive Driving Beam (ADB): -',
+        'Auto High Beam (AHB): -',
+        'Adaptive Driving Beam (ADB): ✓',
         'Lead Car Departure Notification System: ✓',
         'Honda CONNECT (Safety, Security, Convenience): ✓',
         'Driver Attention Monitor: ✓',
         'Active Noise Control: ✓',
-        'Active Sound Control: -',
-        'Tire Pressure Monitoring System (TPMS): -',
+        'Active Sound Control: ✓',
+        'Tire Pressure Monitoring System (TPMS): ✓',
         'Security Alarm with Immobiliser: ✓'
       ]
     },
-    'Variant 3': {
+    'Variant 2': {
       'Engine & Perfomance': [
           '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
           '193 PS (142 hp) at 6,000 rpm, 243 Nm at 5,000 rpm',
@@ -3361,7 +3216,7 @@ const carData = {
         'Security Alarm with Immobiliser: ✓'
       ]
     },
-    'Variant 4': {
+    'Variant 3': {
       'Engine & Perfomance': [
           '2.0 litre DOHC i-VTEC (Atkinson Cycle) four-cylinder engine',
           '148 PS (146 hp) at 6,100 rpm, 190 Nm at 4,500 rpm',
@@ -3803,7 +3658,6 @@ function populateTabs() {
     'Crv1' : 'Honda CRV',
     'Crv2' : 'Honda CRV',
     'Crv3' : 'Honda CRV',
-    'Crv4' : 'Honda CRV',
     'TyperR1'  : 'Honda RS',
     'Prelude1' : 'Honda Prelude',
 };

@@ -310,6 +310,15 @@ svg {
   vertical-align: middle;
 }
 
+/* Images carry width/height attributes so the browser can reserve their box
+   before they load. Those attributes are presentational hints, so without this
+   an <img> sized by CSS width alone would take its HEIGHT from the attribute
+   and stretch. Class rules that set an explicit height (.img-fluid2,
+   .img-servis) outrank this and still win. */
+img {
+  height: auto;
+}
+
 table {
   caption-side: bottom;
   border-collapse: collapse;
@@ -11029,7 +11038,7 @@ header.masthead {
   padding-bottom: 6rem;
   text-align: center;
   background-color: #040505;
-  background-image: url(../../assets/img/background/new-bg.png);
+  background-image: url(../../assets/img/background/new-bg.webp);
 background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;

@@ -1,0 +1,104 @@
+{
+  "_comment": [
+    "SINGLE SOURCE OF TRUTH for every price shown on the site.",
+    "Edit prices here ONLY, then run:  npm run prices",
+    "That rewrites index.html (tiles, mobile list, modal tabs, price lists)",
+    "and assets/js/agency.js (loan calculator) so they cannot drift apart.",
+    "Run  npm run prices:check  to verify without writing (use before deploying).",
+    "",
+    "Prices are Peninsular Malaysia retail WITHOUT insurance, in MYR.",
+    "Source: honda.com.my model pricing pages. Verified 8 August 2026.",
+    "'tab' must match the tab id used by openTab() in index.html and the",
+    "tabs map in agency.js populateTabs()."
+  ],
+  "verified": "2026-08-08",
+  "source": "https://www.honda.com.my/",
+  "models": [
+    {
+      "key": "city",
+      "name": "Honda City",
+      "modal": "ProductModal1",
+      "variants": [
+        { "tab": "HondaCity1", "label": "Honda City 1.5L S", "carName": "CITY 1.5L S", "calcLabel": "City 1.5L S", "price": 84900 },
+        { "tab": "HondaCity2", "label": "Honda City 1.5L E", "carName": "CITY 1.5L E", "calcLabel": "City 1.5L E", "price": 89900 },
+        { "tab": "HondaCity3", "label": "Honda City 1.5L V", "carName": "CITY 1.5L V", "calcLabel": "City 1.5L V", "price": 94900 },
+        { "tab": "HondaCity4", "label": "Honda City 1.5L RS", "carName": "CITY 1.5L RS", "calcLabel": "City 1.5L RS", "price": 99900 },
+        { "tab": "HondaCity5", "label": "Honda City 1.5L e:HEV RS", "carName": "CITY e:HEV 1.5L RS", "calcLabel": "City 1.5L e:HEV RS", "price": 111900 }
+      ]
+    },
+    {
+      "key": "city-hatchback",
+      "name": "Honda City Hatchback",
+      "modal": "ProductModal2",
+      "variants": [
+        { "tab": "CityHatchback1", "label": "City Hatchback 1.5L S", "carName": "CITY HATCHBACK 1.5L S", "calcLabel": "City Hatchback 1.5L S", "price": 85900 },
+        { "tab": "CityHatchback2", "label": "City Hatchback 1.5L E", "carName": "CITY HATCHBACK 1.5L E", "calcLabel": "City Hatchback 1.5L E", "price": 90900 },
+        { "tab": "CityHatchback3", "label": "City Hatchback 1.5L V", "carName": "CITY HATCHBACK 1.5L V", "calcLabel": "City Hatchback 1.5L V", "price": 95900 },
+        { "tab": "CityHatchback4", "label": "City Hatchback 1.5L RS", "carName": "CITY HATCHBACK 1.5L RS", "calcLabel": "City Hatchback 1.5L RS", "price": 100900 },
+        { "tab": "CityHatchback5", "label": "City Hatchback 1.5L e:HEV RS", "carName": "CITY HATCHBACK e:HEV 1.5L RS", "calcLabel": "City Hatchback 1.5L e:HEV RS", "price": 112900 }
+      ]
+    },
+    {
+      "key": "civic",
+      "name": "Honda Civic",
+      "modal": "ProductModal3",
+      "variants": [
+        { "tab": "Civic1", "label": "Civic 1.5L E", "carName": "CIVIC 1.5L E", "calcLabel": "Civic 1.5L E", "price": 133900 },
+        { "tab": "Civic2", "label": "Civic 1.5L V", "carName": "CIVIC 1.5L V", "calcLabel": "Civic 1.5L V", "price": 144900 },
+        { "tab": "Civic3", "label": "Civic 1.5L RS", "carName": "CIVIC 1.5L RS", "calcLabel": "Civic 1.5L RS", "price": 149900 },
+        { "tab": "Civic4", "label": "Civic e:HEV 2.0L RS", "carName": "CIVIC e:HEV 2.0L RS", "calcLabel": "Civic e:HEV 2.0L RS", "price": 167900 }
+      ]
+    },
+    {
+      "key": "hrv",
+      "name": "Honda HR-V",
+      "modal": "ProductModal4",
+      "variants": [
+        { "tab": "Hrv1", "label": "HR-V 1.5L S", "carName": "HR-V 1.5L S", "calcLabel": "HR-V 1.5L S", "price": 115900 },
+        { "tab": "Hrv2", "label": "HR-V 1.5L T E", "carName": "HR-V 1.5L T E", "calcLabel": "HR-V 1.5L T E", "price": 130900 },
+        { "tab": "Hrv3", "label": "HR-V 1.5L T V", "carName": "HR-V 1.5L T V", "calcLabel": "HR-V 1.5L T V", "price": 137900 },
+        { "tab": "Hrv4", "label": "HR-V 1.5L e:HEV RS", "carName": "HR-V 1.5L e:HEV RS", "calcLabel": "HR-V 1.5L e:HEV RS", "price": 143900 }
+      ]
+    },
+    {
+      "key": "wrv",
+      "name": "Honda WR-V",
+      "modal": "ProductModal5",
+      "variants": [
+        { "tab": "Wrv1", "label": "WR-V 1.5L S", "carName": "WR-V 1.5L S", "calcLabel": "WR-V 1.5L S", "price": 89900 },
+        { "tab": "Wrv2", "label": "WR-V 1.5L E", "carName": "WR-V 1.5L E", "calcLabel": "WR-V 1.5L E", "price": 95900 },
+        { "tab": "Wrv3", "label": "WR-V 1.5L V", "carName": "WR-V 1.5L V", "calcLabel": "WR-V 1.5L V", "price": 99900 },
+        { "tab": "Wrv4", "label": "WR-V 1.5L RS", "carName": "WR-V 1.5L RS", "calcLabel": "WR-V 1.5L RS", "price": 107900 }
+      ]
+    },
+    {
+      "key": "crv",
+      "name": "Honda CR-V",
+      "modal": "ProductModal6",
+      "_note": "Lineup updated 3 March 2026: petrol S (RM159,900) and petrol E (RM169,900) discontinued, e:HEV E introduced.",
+      "variants": [
+        { "tab": "Crv1", "label": "CR-V 2.0L e:HEV E", "carName": "CR-V 2.0L e:HEV E", "calcLabel": "CR-V 2.0L e:HEV E", "price": 178200 },
+        { "tab": "Crv2", "label": "CR-V 1.5L V AWD", "carName": "CR-V 1.5L V AWD", "calcLabel": "CR-V 1.5L V AWD", "price": 181900 },
+        { "tab": "Crv3", "label": "CR-V 2.0L e:HEV RS", "carName": "CR-V 2.0L e:HEV RS", "calcLabel": "CR-V 2.0L e:HEV RS", "price": 195900 }
+      ]
+    },
+    {
+      "key": "type-r",
+      "name": "Honda Civic Type R",
+      "modal": "ProductModal7",
+      "tileStyle": "subheading",
+      "variants": [
+        { "tab": "TyperR1", "label": "Type R", "carName": "Type-R", "calcLabel": "Type R", "price": 399900 }
+      ]
+    },
+    {
+      "key": "prelude",
+      "name": "Honda Prelude",
+      "modal": "ProductModal8",
+      "tileStyle": "subheading",
+      "variants": [
+        { "tab": "Prelude1", "label": "Prelude 2.0L e:HEV", "carName": "Prelude 2.0L e:HEV", "calcLabel": "Prelude 2.0L e:HEV", "price": 278000 }
+      ]
+    }
+  ]
+}

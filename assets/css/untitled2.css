@@ -118,7 +118,7 @@
 @media (min-width: 769px) {
 
   #Product {
-    background-image: url(../../assets/img/background/redSilver.png);
+    background-image: url(../../assets/img/background/redSilver.webp);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
@@ -2247,7 +2247,7 @@ body {font-family: 'Montserrat';}body {line-height: 1.6;font-size: 14px;font-wei
 #Hours 
 {
 
-  background-image: url(../../assets/img/background/service-cover.png);
+  background-image: url(../../assets/img/background/service-cover.webp);
 
   background-size:cover;
   background-repeat: no-repeat;
