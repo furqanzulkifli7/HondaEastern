@@ -1,6 +1,6 @@
 # Improvements — Honda Eastern Automobile site
 
-Last reviewed: 8 August 2026 — items 1-3 completed same day
+Last reviewed: 13 August 2026 — items 1-5 done; 6-9 open
 
 Ordered by value-for-effort. Everything here was verified against the current
 code, not assumed — file and line references are included so each item can be
@@ -90,35 +90,53 @@ containers can no longer collapse to zero width.
 
 ---
 
-## 4. Duplicate libraries on every page load
+## ~~4. Duplicate libraries on every page load~~ — DONE 13 Aug 2026
 
-[index.html:136-144](index.html) loads two copies of two libraries:
+The site now loads **one** jQuery and **one** Owl Carousel.
 
-- **jQuery twice** — `assets/js/jquery.minf43b.js` (3.7.1) then
-  `assets/vendors/jquery.min.js`. The second overwrites the first, so whichever
-  version it is silently wins.
-- **Owl Carousel twice** — `owl.carousel.min.js` then the unminified
-  `owl.carousel.js`.
+This turned out to be a security fix as well as a cleanup. jQuery 3.7.1 loaded
+first, then `assets/vendors/jquery.min.js` (**3.3.1**) loaded after and won — so
+the live site was running a version affected by CVE-2020-11022 / CVE-2020-11023
+(XSS in the HTML prefilter, fixed in 3.5.0). It now runs 3.7.1.
 
-Free bandwidth saving, and it removes a real source of "works locally, breaks in
-production" confusion caused by two jQuery versions racing.
+**The catch, worth knowing before touching these tags again:** the last line of
+`assets/js/jquery.minf43b.js` is `jQuery.noConflict()` — it is the WordPress
+build, and it deliberately gives up the `$` alias. The duplicate 3.3.1 copy was
+what quietly handed `$` back, and `agency.js` uses `$` throughout. Dropping the
+duplicate on its own killed every carousel with `TypeError: $ is not a function`.
+There is now an explicit one-line `window.$ = window.jQuery;` after the jQuery
+tag, commented in place. Do not remove it.
 
-**Do:** keep one jQuery (the 3.7.1 build) and only the minified Owl. Test the
-promo carousel, the salesman swiper and the loan calculator afterwards, since
-all three depend on jQuery.
+Also deleted `assets/vendors/` (352 KB, five files — nothing referenced any of
+them once the duplicate jQuery went) and the unminified `owl.carousel.js`.
+
+Verified afterwards: single jQuery 3.7.1, both promo carousels, the mobile
+services carousel, owl nav clicks, the salesman swiper, the loan calculator,
+modals, spec tabs and the lightbox — all working, zero console errors.
 
 ---
 
-## 5. Add cache-busting to changed assets
+## ~~5. Add cache-busting to changed assets~~ — DONE 13 Aug 2026
 
-Currently `agency.js?v=3`, `untitled2.css?v=1.3`, `bootstrap.min2.css?v=1.3`.
-Without these, returning visitors keep the old cached file and do not see fixes
-— which looks exactly like a failed upload. This matters more now that the CSS
-references `.webp` backgrounds: a stale stylesheet would request PNGs that no
-longer exist on the server.
+Version numbers are no longer hand-written. Every local CSS/JS link in
+index.html is stamped with a hash of that file's contents:
 
-**Do:** bump the `?v=` number every time `agency.js`, `untitled2.css` or
-`bootstrap.min2.css` is uploaded. Worth a note in the deploy routine.
+```
+npm run stamp        # restamp after changing any CSS/JS
+npm run predeploy    # prices:check + stamp, run this before building the zip
+```
+
+[tools/stamp-assets.js](tools/stamp-assets.js) hashes each referenced file and
+rewrites its `?v=`. A changed file gets a new URL automatically; an unchanged
+one keeps its cached copy. `--check` exits non-zero if anything is unstamped, so
+it can gate a deploy.
+
+This replaced `?v=1.3` / `?v=3`, which had to be remembered by hand — and
+forgetting meant returning visitors kept the old file and never saw the fix,
+looking exactly like a failed upload. It also now covers the twelve CSS/JS files
+that previously had **no** cache-busting at all.
+
+CDN URLs are skipped: they are already versioned and cannot be hashed locally.
 
 ---
 
@@ -191,9 +209,8 @@ with prices centralised, the pages can be generated rather than hand-written.
 
 ## Suggested order
 
-Items 1-3 are done. Remaining, in order:
+Items 1-5 are done. Remaining:
 
-1. **Items 4, 5** — quick, low risk.
-2. **Items 6, 7, 9** — polish.
-3. **Item 8** — the restructure. Now much easier: prices.json already holds the
-   per-model data those pages would be generated from.
+1. **Items 6, 7, 9** — polish. Item 7 (a 1200x630 social image) is the one that
+   shows up publicly, on every WhatsApp share.
+2. **Item 8** — the restructure. Deliberately left for later.

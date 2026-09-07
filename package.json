@@ -8,6 +8,8 @@
     "start": "live-server --port=3000 --wait=200",
     "prices": "node tools/sync-prices.js",
     "prices:check": "node tools/sync-prices.js --check",
+    "stamp": "node tools/stamp-assets.js",
+    "predeploy": "node tools/sync-prices.js --check && node tools/stamp-assets.js",
     "images": "node tools/optimise-images.js && node tools/add-image-dims.js",
     "images:dry": "node tools/optimise-images.js --dry"
   },

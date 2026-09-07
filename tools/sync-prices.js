@@ -40,6 +40,13 @@ function replaceOne(text, re, make, what) {
 
 const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+// The IDE's HTML formatter rewraps long tags, so label text and anchors can end
+// up split across lines. HTML collapses that whitespace when rendering, so
+// compare and match on collapsed text rather than treating a rewrap as a change.
+const collapse = s => s.replace(/\s+/g, ' ').trim();
+// Build a pattern where each space in the literal matches any run of whitespace.
+const escLoose = s => esc(s).replace(/ +/g, '\\s+');
+
 // ---------------------------------------------------------------- index.html
 let html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
 
@@ -67,7 +74,11 @@ for (const model of prices.models) {
     // 3. spec tab button label
     html = replaceOne(html,
       new RegExp(`(openTab\\(event, '${esc(v.tab)}'\\)">)[^<]*(</button>)`, 'g'),
-      m => m[1] + v.label + m[2], `${model.name} tab label ${v.tab}`);
+      m => {
+        const current = m[0].slice(m[1].length, m[0].length - m[2].length);
+        // a rewrapped-but-identical label is not a change
+        return collapse(current) === v.label ? m[0] : m[1] + v.label + m[2];
+      }, `${model.name} tab label ${v.tab}`);
 
     // 4. price inside that tab panel
     html = replaceOne(html,
@@ -76,7 +87,7 @@ for (const model of prices.models) {
 
     // 5. entry in the "Retail Price Without Insurance" list
     html = replaceOne(html,
-      new RegExp(`(car-name">${esc(v.carName)}</strong>[\\s\\S]{0,200}?<span class="price">)RM [\\d,]+\\.\\d\\d(</span>)`, 'g'),
+      new RegExp(`(car-name">\\s*${escLoose(v.carName)}\\s*</strong>[\\s\\S]{0,200}?<span class="price">)RM [\\d,]+\\.\\d\\d(</span>)`, 'g'),
       m => m[1] + rm(v.price) + m[2], `${model.name} price list ${v.carName}`);
   }
 }
