@@ -66,7 +66,7 @@ $(document).ready(function() {
       0: {
         items: 1
       },
-      600: {
+      900: {
         items: 2
       },
       1400: {
@@ -169,80 +169,107 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 
+// The <option> values in #car-model ARE the prices in RM (generated from
+// prices.json), so the select is the source of truth. Nothing needs to be
+// parsed back out of the formatted string the customer sees.
+function selectedCarPrice() {
+  const price = parseFloat(document.getElementById('car-model').value);
+  return isNaN(price) ? 0 : price;
+}
+
+function formatRM(value) {
+  return "RM " + value.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 function updateLoanAmount() {
-	const carModel = document.getElementById('car-model').value;
-	document.getElementById('hargakereta').value = "RM "+ carModel;
-  const hargaKeretaSpan = document.getElementById('hargakereta');
+  const price = selectedCarPrice();
 
-
-  console.log(carModel + " VALUE")
-
-    // Check if carModel is a number
-    if (!isNaN(carModel) && carModel.trim() !== '') {
-      hargaKeretaSpan.textContent = `${parseFloat(carModel).toFixed(2)}`;
-    } else {
-      hargaKeretaSpan.textContent = '0';;
-    }
+  // The "RM " prefix is a literal text node in the markup, so this span holds
+  // the number only.
+  document.getElementById('hargakereta').textContent =
+    price > 0 ? price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '0';
 
   document.getElementById('downpaymentval').value = 0;
-
-console.log(document.getElementById('hargakereta').value)
-console.log(document.getElementById('form-field-repayment_period').value)
-getRangeSliderValue();
-}
-// Function to get the value of the range slider
-function getRangeSliderValue() {
-  var value = jQuery('#form-field-annual_interest').val();
-  console.log('Annual Interest: ' + value);
 
   calculate();
 }
 
 
+// Hire-Purchase (Amendment) Act 2026 — gazetted 30 January 2026, in force
+// 1 June 2026 — ended flat-rate and Rule of 78 interest on new hire purchase
+// agreements. Interest is now charged on the REDUCING BALANCE and the rate is
+// quoted as an effective interest rate (EIR), so the instalment is the standard
+// amortisation formula already implemented in calculatePayment() below.
+//
+// The rate is NOT interchangeable with the flat rate this calculator used until
+// September 2026. An EIR is roughly 1.9x the flat rate that yields the same
+// instalment (3.5% flat over 5 years == 6.54% EIR), so feeding an old flat rate
+// into this formula understates the monthly payment by around 11%. The slider
+// range in index.html was rebased to EIR at the same time as this change — keep
+// the two in step.
+// The flat-rate equivalent of an EIR. The principal cancels out, so this needs
+// only the rate and the tenure — no car, no deposit, no Calculate click. It is
+// a restatement of the rate the customer has dialled in, not a result of the
+// loan, which is why it is computed here and not inside calculate().
+//
+// Verified against RinggitPlus' flat-to-EIR converter: RM100,000 over 5 years at
+// 3.00% flat is RM115,000 total and 5.64% EIR, which is what this returns.
+// Note the figure moves with tenure — 3.00% flat is 5.68% EIR over 3 years and
+// 5.50% over 9 — so the repayment period has to be part of the calculation.
+function flatRateEquivalent(eir, years) {
+  const i = eir / 100 / 12;
+  const months = years * 12;
+  if (i === 0) return 0;
+  const g = Math.pow(1 + i, months);
+  // Total repaid per RM1 borrowed, less the RM1 of principal, spread per year.
+  const totalPerRinggit = ((i * g) / (g - 1)) * months;
+  return ((totalPerRinggit - 1) / years) * 100;
+}
+
+// Keeps the grey "equivalent flat rate" line under the EIR label in step with
+// the slider. Safe to call at any time — it never depends on a chosen variant.
+function updateFlatEquivalent() {
+  const flatEl = document.getElementById('flat-equivalent');
+  if (!flatEl) return;
+
+  const years = parseFloat(document.getElementById('form-field-repayment_period').value);
+  const eir = parseFloat(jQuery('#form-field-annual_interest').val());
+
+  flatEl.textContent = (years > 0 && eir > 0)
+    ? flatRateEquivalent(eir, years).toFixed(2) + '%'
+    : '—'; // escaped so it survives any charset header
+}
+
 function calculate() {
-    const amount = parseRMToFloat(document.getElementById('hargakereta').value);
-    const downpayment = (document.getElementById('downpaymentval').value);
-    const loanAmount = amount - downpayment;
-    //console.log("amount : " +  loanAmount);
-    //console.log("downpayment : " +  downpayment);
+  const price = selectedCarPrice();
+  const downpayment = parseFloat(document.getElementById('downpaymentval').value) || 0;
+  const principal = price - downpayment;
+  const years = parseFloat(document.getElementById('form-field-repayment_period').value);
+  const eir = parseFloat(jQuery('#form-field-annual_interest').val());
 
-    var value = jQuery('#form-field-annual_interest').val();
+  const monthlyEl = document.getElementById('monthval');
+  const totalPaidEl = document.getElementById('totalPaid');
+  const totalInterestEl = document.getElementById('totalInterest');
 
-    const term = parseFloat(document.getElementById('form-field-repayment_period').value);
-    const interest = value;
-    //console.log("Term : " +  term.toFixed(2));
+  // Always current, even with no variant chosen — it only describes the rate.
+  updateFlatEquivalent();
 
+  // No variant picked yet, or a deposit that covers the whole car.
+  if (!(principal > 0) || !(years > 0) || isNaN(eir)) {
+    monthlyEl.textContent = null;
+    totalPaidEl.textContent = null;
+    totalInterestEl.textContent = null;
+    return;
+  }
 
+  const months = years * 12;
+  const monthly = calculatePayment(principal, months, eir);
+  const totalPaid = monthly * months;
+  const totalInterest = totalPaid - principal;
 
-    const totalInterest = (interest/100) * loanAmount *term;
-    const monthly = (loanAmount+totalInterest) / (term*12);
- 
-    //console.log("loanAmount : " +  loanAmount);
-    //console.log("interestd : " +  interest);
-
-    const totalPaid = monthly * term*12;
-
-    //console.log("Monthly : " +  monthly.toFixed(2));
-    //console.log("Total :  "+ totalPaid.toFixed(2));
-    //console.log("Interest : " + totalInterest.toFixed(2));
-
-    if(monthly >0)
-    {
-
-    const formattedMonthly = "RM " + monthly.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    const formattedTotal = "RM " + totalPaid.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    const formattedInterest = "RM " + totalInterest.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
-    document.getElementById('monthval').textContent = formattedMonthly;
-    document.getElementById('totalPaid').textContent = formattedTotal;
-    document.getElementById('totalInterest').textContent = formattedInterest;
-    }
-    else
-    {
-      document.getElementById('monthval').textContent = null;
-      document.getElementById('totalPaid').textContent = null;
-      document.getElementById('totalInterest').textContent = null;
-    }
+  monthlyEl.textContent = formatRM(monthly);
+  totalPaidEl.textContent = formatRM(totalPaid);
+  totalInterestEl.textContent = formatRM(totalInterest);
 }
 
 function calculatePayment(finAmount, finMonths, finInterest){
@@ -284,27 +311,14 @@ function detectDownPaymentOption() {
   //calculate(); // ni bila tekan enter still jadi
 }
 
+// Deliberately does not recalculate. As with the interest slider, the figures
+// only update when Calculate is clicked. calculate() does now guard an empty or
+// over-large deposit, so this is a one-liner to switch on if that ever changes.
 function CheckIfNoDownPayment()
 {
-    //calculate(); // TEMPORARILY DISABLE FURTHER NOTICE AHEAD 
+    //calculate();
 }
 
-
-function parseRMToFloat(rmString) {
-  // Remove "Rm " from the string
-  let cleanedString='';
-
-  if(rmString!=null)
-  {
-    cleanedString = rmString.replace("RM", "");
-  }
-  else
-  {
-    return null;
-  }
-  // Parse the cleaned string to a float
-  return parseFloat(cleanedString);
-}
 
 //For car calculation
 const data = {
@@ -312,7 +326,6 @@ const data = {
     {
       "label": "Honda City",
       "options": [
-        {"label": "City 1.5L S", "value": "84900"},
         {"label": "City 1.5L E", "value": "89900"},
         {"label": "City 1.5L V", "value": "94900"},
         {"label": "City 1.5L RS", "value": "99900"},
@@ -322,8 +335,6 @@ const data = {
     {
       "label": "Honda City Hatchback",
       "options": [
-        {"label": "City Hatchback 1.5L S", "value": "85900"},
-        {"label": "City Hatchback 1.5L E", "value": "90900"},
         {"label": "City Hatchback 1.5L V", "value": "95900"},
         {"label": "City Hatchback 1.5L RS", "value": "100900"},
         {"label": "City Hatchback 1.5L e:HEV RS", "value": "112900"}
@@ -350,10 +361,9 @@ const data = {
     {
       "label": "Honda WR-V",
       "options": [
-        {"label": "WR-V 1.5L S", "value": "89900"},
-        {"label": "WR-V 1.5L E", "value": "95900"},
-        {"label": "WR-V 1.5L V", "value": "99900"},
-        {"label": "WR-V 1.5L RS", "value": "107900"}
+        {"label": "WR-V 1.5L E", "value": "94900"},
+        {"label": "WR-V 1.5L V", "value": "98900"},
+        {"label": "WR-V 1.5L RS", "value": "104900"}
       ]
     },
     {
@@ -422,120 +432,6 @@ function openTab(evt, tabName) {
 const carData = {
   'Honda City'            : {
       'Variant 1': {
-          'Engine': [
-              '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
-              '1,498 Displacement (CC)',
-              'Max Torque : 145 Nm,  14.8 kg-m and 4300 rpm',
-              'Max Power : 121 PS , 89 kW and 6600 rpm',
-              'Electronic Fuel Injection (PGM‑FI)',
-              'Continuous Variable Transmission (CVT)',
-              'Electric Power Steering (EPS)'
-          ],
-          'Perfomance': [
-              '196 km/h Maximum speed',
-              '10.2s of Accelaration of 0-100 km/h (secs)',
-              'Fuel Consumption (L/100km) : 5.6'
-
-          ],
-          'Brake System': [
-            'Front :	Ventilated Disc',
-            'Rear :	Drum',
-            'Parking Brake :	Hand Brake Lever'
-          ],
-          'Suspension System':[
-            'Front : MacPherson Strut',
-            'Rear : Torsion Beam'
-          ],
-          'Dimension': [
-            'Length (mm)	4,580',
-            'Width (mm)	1,748',
-            'Height (mm)	1,467',
-            'Wheelbase (mm)	2,600',
-            'Tread Front (mm)	1,495',
-            'Tread Rear (mm)	1,483',
-            'Curb Weight (kg)	1,125',
-            'Boot Capacity (Litre)	519'
-          ],
-          'Tyres' :[
-            'Wheel Type : Alloy',
-            'Wheel Size :	15',
-            'Tyre Size	: 185/60R15',
-            'Spare Tyre Size : 15'
-          ],
-          'Exterior' : [
-             'Headlights	: Projector Halogen',
-              'Auto Headlights : ✓',	
-              'Daytime Running Lights	: LED',
-              'Front Fog Lights : -',
-              'Side Mirrors With Turning Lights : ✓',	
-              'Outer Door Handle : Body Colour',
-              'Trunk Spoiler : - ',
-              'Rear Combi Lights : LED',
-              'Antenna	: Shark Fin'
-          ],
-          'Control & Interior' :[
-            'Remote Engine Start : -',
-            'Walk Away Auto Lock : ✓',
-            'Smart Entry with Push Start Button : ✓',
-            'Paddle Shift : ✓',
-            'Deceleration Selector Paddle	-',
-            'Meter Cluster : 4.2” TFT Meter',
-            'Air Conditioning	: Manual',
-            'Rear Air Conditioning Ventilation : ✓',
-            'Steering Wheel :	Urethane',
-            'Gear Knob Type	: Urethane',
-            'Upholstery	: Fabric',
-            '60:40 Seats : ✓',
-            'Steering Wheel Switch Audio Control : ✓',
-            'Pedal Pad Type	: Normal',
-            'Power Adjustable Door Mirror : ✓',
-            'Power Retractable Door Mirror : ✓',
-            'Centre Console with Armrest	: ✓',
-            'Rear USB Charger : -'
-          ],
-          'Audio':[
-            'Audio System	Standard Audio ',
-            'Apple CarPlay™ & Android Auto™ Connectivity* : - ',
-            'USB Port	: 1',
-            'Hands‑Free Telephone (HFT) : ✓',
-            'Speakers	: 4',
-            'Bluetooth	: ✓',
-            'Tweeter	: -'
-          ],
-          'Safety & Security':[
-            'Dual Front SRS Airbags	: ✓',
-            'Side Airbags	: ✓',
-            'Side Curtain Airbags	: ✓',
-            'Driver Seatbelt Reminder	: ✓',
-            'Assistant Seatbelt Reminder	: ✓',
-            'Rear Seatbelt Reminder	: ✓',
-            'ISOFIX I‑Size Type	: ✓',
-            'Vehicle Stability Assist (VSA)	: ✓',
-            'Anti‑lock Braking System (ABS)	: ✓',
-            'Electronic Brake Distribution (EBD)	: ✓',
-            'Brake Assist (BA)	: ✓',
-            'Auto Brake Hold (ABH)	: -',
-            'Hill Start Assist (HSA)	: ✓',
-            'Emergency Stop Signal (ESS)	: ✓',
-            'Reverse Sensors	2',
-            'Reverse Camera	: -',
-            'Honda LaneWatch Camera (LWC)	-',
-            'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LSF, LCDN) : -',
-            'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LCDN)	: ✓',
-            'Forward Collision Warning (FCW)	: ✓',
-            'Collision Mitigation Braking System (CMBS)	: ✓',
-            'Lane Keep Assist System (LKAS)	: ✓',
-            'Lane Departure Warning (LDW)	: ✓',
-            'Road Departure Mitigation (RDM)	: ✓',
-            'Adaptive Cruise Control (ACC)	: ✓',
-            'Low Speed Follow (LSF)	: -',
-            'Auto High Beam (AHB)	: ✓',
-            'Lead Car Departure Notification (LCDN)	: ✓',
-            'Honda CONNECT (Safety, Security, Convenience) : -',
-            'Security Alarm with Immobiliser	: ✓'
-          ]
-      },
-      'Variant 2': {
         'Engine': [
             '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
             '1,498 Displacement (CC)',
@@ -560,7 +456,7 @@ const carData = {
           'Rear : Torsion Beam'
         ],
         'Dimension': [
-          'Length (mm)	4,580',
+          'Length (mm)	4,577',
           'Width (mm)	1,748',
           'Height (mm)	1,467',
           'Wheelbase (mm)	2,600',
@@ -573,15 +469,15 @@ const carData = {
           'Wheel Type : Alloy',
           'Wheel Size :	15',
           'Tyre Size	: 185/60R15',
-          'Spare Tyre Size : 15'
+          'Spare Tyre Size : Temporary Repair Kit'
         ],
         'Exterior' : [
-           'Headlights	: Projector Halogen',
+           'Headlights	: Bi-LED Projector',
             'Auto Headlights : ✓',	
             'Daytime Running Lights	: LED',
             'Front Fog Lights : -',
             'Side Mirrors With Turning Lights : ✓',	
-            'Outer Door Handle : Chrome',
+            'Outer Door Handle : Body Colour',
             'Trunk Spoiler : - ',
             'Rear Combi Lights : LED',
             'Antenna	: Shark Fin'
@@ -604,6 +500,9 @@ const carData = {
           'Power Adjustable Door Mirror : ✓',
           'Power Retractable Door Mirror : ✓',
           'Centre Console with Armrest	: ✓',
+            'Ambient Lighting	: -',
+            'Wireless Charger	: -',
+            'Auto Dim Rearview Mirror	: -',
           'Rear USB Charger : 2'
         ],
         'Audio':[
@@ -632,7 +531,9 @@ const carData = {
           'Emergency Stop Signal (ESS)	: ✓',
           'Reverse Sensors	2',
           'Reverse Camera	: Multi-angle',
-          'Honda LaneWatch Camera (LWC)	-',
+            '360-Degree Multi-View Camera	: -',
+            'Blind Spot Information (BSI) with Rear Cross Traffic Alert	: ✓',
+          'Honda LaneWatch Camera (LWC)	✓',
           'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LSF, LCDN) : -',
           'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LCDN)	: ✓',
           'Forward Collision Warning (FCW)	: ✓',
@@ -648,7 +549,7 @@ const carData = {
           'Security Alarm with Immobiliser	: ✓'
         ]
       },
-       'Variant 3': {
+       'Variant 2': {
           'Engine': [
               '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
               '1,498 Displacement (CC)',
@@ -673,7 +574,7 @@ const carData = {
             'Rear : Torsion Beam'
           ],
           'Dimension': [
-            'Length (mm)	4,580',
+            'Length (mm)	4,577',
             'Width (mm)	1,748',
             'Height (mm)	1,467',
             'Wheelbase (mm)	2,600',
@@ -684,17 +585,17 @@ const carData = {
           ],
           'Tyres' :[
             'Wheel Type : Alloy',
-            'Wheel Size :	15',
-            'Tyre Size	: 185/60R15',
-            'Spare Tyre Size : 15'
+            'Wheel Size :	16',
+            'Tyre Size	: 185/55R16 (Turbine-style Shark Grey Alloy)',
+            'Spare Tyre Size : Temporary Repair Kit'
           ],
           'Exterior' : [
-            'Headlights	: Projector Halogen',
+            'Headlights	: Bi-LED Projector',
               'Auto Headlights : ✓',	
               'Daytime Running Lights	: LED',
               'Front Fog Lights : -',
               'Side Mirrors With Turning Lights : ✓',	
-              'Outer Door Handle : Chrome',
+              'Outer Door Handle : Body Colour',
               'Trunk Spoiler : - ',
               'Rear Combi Lights : LED',
               'Antenna	: Shark Fin'
@@ -717,11 +618,14 @@ const carData = {
             'Power Adjustable Door Mirror : ✓',
             'Power Retractable Door Mirror : ✓',
             'Centre Console with Armrest	: ✓',
+            'Ambient Lighting	: ✓ Blue',
+            'Wireless Charger	: -',
+            'Auto Dim Rearview Mirror	: -',
             'Rear USB Charger : 2'
           ],
           'Audio':[
-            '8" Display Audio',
-            'Apple CarPlay™ & Android Auto™ Connectivity* : ✓ ',
+            '10" Display Audio',
+            'Apple CarPlay™ & Android Auto™ Connectivity* : ✓ Wireless',
             'USB Port	: 2',
             'Hands‑Free Telephone (HFT) : ✓',
             'Speakers	: 4',
@@ -745,7 +649,9 @@ const carData = {
             'Emergency Stop Signal (ESS)	: ✓',
             'Reverse Sensors	2',
             'Reverse Camera	: Multi-angle',
-            'Honda LaneWatch Camera (LWC)	-',
+            '360-Degree Multi-View Camera	: ✓ with Moving Object Detection',
+            'Blind Spot Information (BSI) with Rear Cross Traffic Alert	: ✓',
+            'Honda LaneWatch Camera (LWC)	✓',
             'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LSF, LCDN) : -',
             'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LCDN)	: ✓',
             'Forward Collision Warning (FCW)	: ✓',
@@ -761,7 +667,7 @@ const carData = {
             'Security Alarm with Immobiliser	: ✓'
           ]
       },
-      'Variant 4': {
+      'Variant 3': {
         'Engine': [
             '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
             '1,498 Displacement (CC)',
@@ -786,7 +692,7 @@ const carData = {
           'Rear : Torsion Beam'
         ],
         'Dimension': [
-          'Length (mm)	4,580',
+          'Length (mm)	4,594',
           'Width (mm)	1,748',
           'Height (mm)	1,467',
           'Wheelbase (mm)	2,600',
@@ -797,18 +703,18 @@ const carData = {
         ],
         'Tyres' :[
           'Wheel Type : Alloy',
-          'Wheel Size :	15',
-          'Tyre Size	: 185/60R15',
-          'Spare Tyre Size : 15'
+          'Wheel Size :	16',
+          'Tyre Size	: 185/55R16 (Berlina Black Alloy)',
+          'Spare Tyre Size : Temporary Repair Kit'
         ],
         'Exterior' : [
-          'Headlights	: Projector Halogen',
+          'Headlights	: Bi-LED Projector',
             'Auto Headlights : ✓',	
             'Daytime Running Lights	: LED',
             'Front Fog Lights : -',
             'Side Mirrors With Turning Lights : ✓',	
-            'Outer Door Handle : Chrome',
-            'Trunk Spoiler : - ',
+            'Outer Door Handle : Black',
+            'Trunk Spoiler : ✓ Black',
             'Rear Combi Lights : LED',
             'Antenna	: Shark Fin'
         ],
@@ -823,18 +729,21 @@ const carData = {
           'Rear Air Conditioning Ventilation : ✓',
           'Steering Wheel :	Urethane',
           'Gear Knob Type	: Urethane',
-          'Upholstery	: Fabric',
+          'Upholstery	: RS Design with Red Accents',
           '60:40 Seats : ✓',
           'Steering Wheel Switch Audio Control : ✓',
           'Pedal Pad Type	: Normal',
           'Power Adjustable Door Mirror : ✓',
           'Power Retractable Door Mirror : ✓',
           'Centre Console with Armrest	: ✓',
+            'Ambient Lighting	: ✓ Red',
+            'Wireless Charger	: -',
+            'Auto Dim Rearview Mirror	: ✓',
           'Rear USB Charger : 2'
         ],
         'Audio':[
-          '8" Display Audio',
-          'Apple CarPlay™ & Android Auto™ Connectivity* : ✓ ',
+          '10" Display Audio',
+          'Apple CarPlay™ & Android Auto™ Connectivity* : ✓ Wireless',
           'USB Port	: 2',
           'Hands‑Free Telephone (HFT) : ✓',
           'Speakers	: 4',
@@ -858,7 +767,9 @@ const carData = {
           'Emergency Stop Signal (ESS)	: ✓',
           'Reverse Sensors	2',
           'Reverse Camera	: Multi-angle',
-          'Honda LaneWatch Camera (LWC)	-',
+            '360-Degree Multi-View Camera	: ✓ with Moving Object Detection',
+            'Blind Spot Information (BSI) with Rear Cross Traffic Alert	: ✓',
+          'Honda LaneWatch Camera (LWC)	✓',
           'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LSF, LCDN) : -',
           'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LCDN)	: ✓',
           'Forward Collision Warning (FCW)	: ✓',
@@ -874,7 +785,7 @@ const carData = {
           'Security Alarm with Immobiliser	: ✓'
         ]
       },
-      'Variant 5': {
+      'Variant 4': {
         'Engine': [
             '1.5 litre DOHC i-VTEC naturally-aspirated Atkinson-cycle four-cylinder engine',
             '1,498 Displacement (CC)',
@@ -899,7 +810,7 @@ const carData = {
           'Rear : Torsion Beam'
         ],
         'Dimension': [
-          'Length (mm)	4,580',
+          'Length (mm)	4,594',
           'Width (mm)	1,748',
           'Height (mm)	1,467',
           'Wheelbase (mm)	2,600',
@@ -911,16 +822,16 @@ const carData = {
         'Tyres' :[
           'Wheel Type : Alloy',
           'Wheel Size :	16',
-          'Tyre Size	: 185/60R16',
+          'Tyre Size	: 185/55R16 (Berlina Black Alloy)',
           'Spare Tyre Size : Temporary Repair Kit'
         ],
         'Exterior' : [
-          'Headlights	: Projector Halogen',
+          'Headlights	: Bi-LED Projector',
             'Auto Headlights : ✓',	
             'Daytime Running Lights	: LED',
             'Front Fog Lights : LED',
             'Side Mirrors With Turning Lights : ✓',	
-            'Outer Door Handle : Body Colour',
+            'Outer Door Handle : Black',
             'Trunk Spoiler : ✓',
             'Rear Combi Lights : LED',
             'Antenna	: Shark Fin'
@@ -943,10 +854,13 @@ const carData = {
           'Power Adjustable Door Mirror : ✓',
           'Power Retractable Door Mirror : ✓',
           'Centre Console with Armrest	: ✓',
+            'Ambient Lighting	: ✓ Red',
+            'Wireless Charger	: ✓',
+            'Auto Dim Rearview Mirror	: ✓',
           'Rear USB Charger : 2'
         ],
         'Audio':[
-          '8" Display Audio',
+          '10" Display Audio',
           'Apple CarPlay™ & Android Auto™ Connectivity* : Wireless',
           'USB Port	: 2',
           'Hands‑Free Telephone (HFT) : ✓',
@@ -971,6 +885,8 @@ const carData = {
           'Emergency Stop Signal (ESS)	: ✓',
           'Reverse Sensors	2',
           'Reverse Camera	: Multi-angle',
+            '360-Degree Multi-View Camera	: ✓ with Moving Object Detection',
+            'Blind Spot Information (BSI) with Rear Cross Traffic Alert	: ✓',
           'Honda LaneWatch Camera (LWC)	✓',
           'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LSF, LCDN) : ✓',
           'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LCDN)	: -',
@@ -992,561 +908,356 @@ const carData = {
   'Honda City Hatchback'  : {
         'Variant 1': {
           'Engine & Perfomance': [
-              '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
-              '121 PS (119 hp) at 6,600 rpm, 145 Nm at 4,300 rpm',
-              'Electronic Fuel Injection (PGM‑FI)',
-              'Continuous Variable Transmission (CVT) with Econ mode',
-              'Electric Power Steering (EPS)',
-          ],
-          'Perfomance' :[
-            '0-100 km/h in 10.7 seconds',
-            'Maximum speed of 195 (km/h)',
-            'Fuel consumption of 5.6 (L/100km)'
-          ],
-          'Brake System': [
-            'Front :	Ventilated Disc',
-            'Rear :	Drum',
-            'Parking Brake :	Hand Brake Lever'
-          ],
-          'Suspension System':[
-            'Front : MacPherson Strut',
-            'Rear : Torsion Beam'
-          ],
-          'Dimension': [
-            'Length (mm)	4,350',
-            'Width (mm)	1,748',
-            'Height (mm)	1,488',
-            'Wheelbase (mm)	2,600',
-            'Tread Front (mm)	1,495',
-            'Tread Rear (mm)	1,483',
-            'Curb Weight (kg)	1,125',
-            'Fuel Tank Capacity (litre) 40',
-            'Boot Capacity (Litre)	519'
-          ],
-          'Tyres' :[
-            'Wheel Type : Alloy',
-            'Wheel Size :	15',
-            'Tyre Size	: 185/60R15',
-            'Spare Tyre Size : 15'
-          ],
-          'Exterior' : [
-             'Headlights	: Projector Halogen',
-              'Auto Headlights : ✓',	
-              'Daytime Running Lights	: LED',
-              'Front Fog Lights : -',
-              'Side Mirrors With Turning Lights : ✓',	
-              'Outer Door Handle : Body Colour',
-              'Rear Combi Lights : LED',
-              'Antenna	: Shark Fin'
-          ],
-          'Control & Interior' :[
-            'Remote Engine Start : -',
-            'Walk Away Auto Lock : ✓',
-            'Smart Entry with Push Start Button : ✓',
-            'Paddle Shift : ✓',
-            'Deceleration Selector Paddle :	-',
-            'ECON Button : ✓',
-            'Meter Cluster : 4.2” TFT Meter',
-            'Air Conditioning	: Manual',
-            'Rear Air Conditioning Ventilation : -',
-            'Steering Wheel :	Urethane',
-            'Gear Knob Type	: Urethane',
-            'Upholstery	: Fabric',
-            'ULTRA Seat : ✓',
-            'Steering Wheel Switch Audio Control : ✓',
-            'Pedal Pad Type	: Normal',
-            'Power Adjustable Door Mirror : ✓',
-            'Power Retractable Door Mirror : ✓',
-            'Centre Console with Armrest	: ✓',
-            'Rear USB Charger : -'
-          ],
-          'Audio':[
-            'Audio System	Standard Audio ',
-            'Apple CarPlay™ & Android Auto™ Connectivity* : - ',
-            'USB Port	: 1',
-            'Hands‑Free Telephone (HFT) : ✓',
-            'Speakers	: 4',
-            'Bluetooth	: ✓',
-            'Tweeter	: -'
-          ],
-          'Safety & Security':[
-            'Dual Front SRS Airbags	: ✓',
-            'Side Airbags	: ✓',
-            'Side Curtain Airbags	: ✓',
-            'Driver Seatbelt Reminder	: ✓',
-            'Assistant Seatbelt Reminder	: ✓',
-            'Rear Seatbelt Reminder	: ✓',
-            'ISOFIX I‑Size Type	: ✓',
-            'Vehicle Stability Assist (VSA)	: ✓',
-            'Anti‑lock Braking System (ABS)	: ✓',
-            'Electronic Brake Distribution (EBD)	: ✓',
-            'Brake Assist (BA)	: ✓',
-            'Auto Brake Hold (ABH)	: -',
-            'Hill Start Assist (HSA)	: ✓',
-            'Emergency Stop Signal (ESS)	: ✓',
-            'Reverse Sensors	2',
-            'Reverse Camera	: -',
-            'Honda LaneWatch Camera (LWC)	-',
-            'Forward Collision Warning (FCW)	: ✓',
-            'Collision Mitigation Braking System (CMBS)	: ✓',
-            'Lane Keep Assist System (LKAS)	: ✓',
-            'Lane Departure Warning (LDW)	: ✓',
-            'Road Departure Mitigation (RDM)	: ✓',
-            'Adaptive Cruise Control (ACC)	: ✓',
-            'Low Speed Follow (LSF)	: -',
-            'Auto High Beam (AHB)	: ✓',
-            'Lead Car Departure Notification (LCDN)	: ✓',
-            'Honda CONNECT (Safety, Security, Convenience) : -',
-            'Security Alarm with Immobiliser	: ✓'
-          ]
-
-      },
-        'Variant 2': {
-          'Engine & Perfomance': [
-              '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
-              '121 PS (119 hp) at 6,600 rpm, 145 Nm at 4,300 rpm',
-              'Electronic Fuel Injection (PGM‑FI)',
-              'Continuous Variable Transmission (CVT) with Econ mode',
-              'Electric Power Steering (EPS)',
-          ],
-          'Perfomance' :[
-            '0-100 km/h in 10.7 seconds',
-            'Maximum speed of 195 (km/h)',
-            'Fuel consumption of 5.6 (L/100km)'
-          ],
-          'Brake System': [
-            'Front :	Ventilated Disc',
-            'Rear :	Drum',
-            'Parking Brake :	Hand Brake Lever'
-          ],
-          'Suspension System':[
-            'Front : MacPherson Strut',
-            'Rear : Torsion Beam'
-          ],
-          'Dimension': [
-            'Length (mm)	4,350',
-            'Width (mm)	1,748',
-            'Height (mm)	1,488',
-            'Wheelbase (mm)	2,600',
-            'Tread Front (mm)	1,495',
-            'Tread Rear (mm)	1,483',
-            'Curb Weight (kg)	1,125',
-            'Fuel Tank Capacity (litre) 40',
-            'Boot Capacity (Litre)	519'
-          ],
-          'Tyres' :[
-            'Wheel Type : Alloy',
-            'Wheel Size :	15',
-            'Tyre Size	: 185/60R15',
-            'Spare Tyre Size : 15'
-          ],
-          'Exterior' : [
-            'Headlights	: Projector Halogen',
-              'Auto Headlights : ✓',	
-              'Daytime Running Lights	: LED',
-              'Front Fog Lights : -',
-              'Side Mirrors With Turning Lights : ✓',	
-              'Outer Door Handle : Body Colour',
-              'Rear Combi Lights : LED',
-              'Antenna	: Shark Fin'
-          ],
-          'Control & Interior' :[
-            'Remote Engine Start : ✓',
-            'Walk Away Auto Lock : ✓',
-            'Smart Entry with Push Start Button : ✓',
-            'Paddle Shift : ✓',
-            'Deceleration Selector Paddle :	-',
-            'ECON Button : ✓',
-            'Meter Cluster : 4.2” TFT Meter',
-            'Air Conditioning	: Single Auto',
-            'Rear Air Conditioning Ventilation : ✓',
-            'Steering Wheel :	Urethane',
-            'Gear Knob Type	: Urethane',
-            'Upholstery	: Fabric',
-            'ULTRA Seat : ✓',
-            'Steering Wheel Switch Audio Control : ✓',
-            'Pedal Pad Type	: Normal',
-            'Power Adjustable Door Mirror : ✓',
-            'Power Retractable Door Mirror : ✓',
-            'Centre Console with Armrest	: ✓',
-            'Rear USB Charger : 2'
-          ],
-          'Audio':[
-            'Audio System	Standard Audio : 8” Display Audio',
-            'Apple CarPlay™ & Android Auto™ Connectivity* : ✓ ',
-            'USB Port	: 1',
-            'Hands‑Free Telephone (HFT) : ✓',
-            'Speakers	: 4',
-            'Bluetooth	: ✓',
-            'Tweeter	: 4'
-          ],
-          'Safety & Security':[
-            'Dual Front SRS Airbags	: ✓',
-            'Side Airbags	: ✓',
-            'Side Curtain Airbags	: ✓',
-            'Driver Seatbelt Reminder	: ✓',
-            'Assistant Seatbelt Reminder	: ✓',
-            'Rear Seatbelt Reminder	: ✓',
-            'ISOFIX I‑Size Type	: ✓',
-            'Vehicle Stability Assist (VSA)	: ✓',
-            'Anti‑lock Braking System (ABS)	: ✓',
-            'Electronic Brake Distribution (EBD)	: ✓',
-            'Brake Assist (BA)	: ✓',
-            'Auto Brake Hold (ABH)	: -',
-            'Hill Start Assist (HSA)	: ✓',
-            'Emergency Stop Signal (ESS)	: ✓',
-            'Reverse Sensors	2',
-            'Reverse Camera	: Multi-angle',
-            'Honda LaneWatch Camera (LWC)	-',
-            'Forward Collision Warning (FCW)	: ✓',
-            'Collision Mitigation Braking System (CMBS)	: ✓',
-            'Lane Keep Assist System (LKAS)	: ✓',
-            'Lane Departure Warning (LDW)	: ✓',
-            'Road Departure Mitigation (RDM)	: ✓',
-            'Adaptive Cruise Control (ACC)	: ✓',
-            'Low Speed Follow (LSF)	: -',
-            'Auto High Beam (AHB)	: ✓',
-            'Lead Car Departure Notification (LCDN)	: ✓',
-            'Honda CONNECT (Safety, Security, Convenience) : -',
-            'Security Alarm with Immobiliser	: ✓'
-          ]
-
-      },
-        'Variant 3': {
-          'Engine & Perfomance': [
-              '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
-              '121 PS (119 hp) at 6,600 rpm, 145 Nm at 4,300 rpm',
-              'Electronic Fuel Injection (PGM‑FI)',
-              'Continuous Variable Transmission (CVT) with Econ mode',
-              'Electric Power Steering (EPS)',
-          ],
-          'Perfomance' :[
-            '0-100 km/h in 10.7 seconds',
-            'Maximum speed of 195 (km/h)',
-            'Fuel consumption of 5.6 (L/100km)'
-          ],
-          'Brake System': [
-            'Front :	Ventilated Disc',
-            'Rear :	Solid Disc',
-            'Parking Brake :	Hand Brake Lever'
-          ],
-          'Suspension System':[
-            'Front : MacPherson Strut',
-            'Rear : Torsion Beam'
-          ],
-          'Dimension': [
-            'Length (mm)	4,350',
-            'Width (mm)	1,748',
-            'Height (mm)	1,488',
-            'Wheelbase (mm)	2,600',
-            'Tread Front (mm)	1,495',
-            'Tread Rear (mm)	1,483',
-            'Curb Weight (kg)	1,125',
-            'Fuel Tank Capacity (litre) 40',
-            'Boot Capacity (Litre)	519'
-          ],
-          'Tyres' :[
-            'Wheel Type : Alloy',
-            'Wheel Size :	16',
-            'Tyre Size	: 185/60R16',
-            'Spare Tyre Size : 15'
-          ],
-          'Exterior' : [
-            'Headlights	: LED',
-              'Auto Headlights : ✓',	
-              'Daytime Running Lights	: LED',
-              'Front Fog Lights : LED',
-              'Side Mirrors With Turning Lights : ✓',	
-              'Outer Door Handle : Body Colour',
-              'Rear Combi Lights : LED',
-              'Antenna	: Shark Fin'
-          ],
-          'Control & Interior' :[
-            'Remote Engine Start : ✓',
-            'Walk Away Auto Lock : ✓',
-            'Smart Entry with Push Start Button : ✓',
-            'Paddle Shift : ✓',
-            'Deceleration Selector Paddle :	-',
-            'ECON Button : ✓',
-            'Meter Cluster : 4.2” TFT Meter',
-            'Air Conditioning	: Single Auto',
-            'Rear Air Conditioning Ventilation : -',
-            'Steering Wheel :	Leather^',
-            'Gear Knob Type	: Leather^',
-            'Upholstery	: Leather^',
-            'ULTRA Seat : ✓',
-            'Steering Wheel Switch Audio Control : ✓',
-            'Pedal Pad Type	: Normal',
-            'Power Adjustable Door Mirror : ✓',
-            'Power Retractable Door Mirror : ✓',
-            'Centre Console with Armrest	: ✓',
-            'Rear USB Charger : 2'
-          ],
-          'Audio':[
-            'Audio System	Standard Audio : 8” Display Audio',
-            'Apple CarPlay™ & Android Auto™ Connectivity* : ✓ ',
-            'USB Port	: 1',
-            'Hands‑Free Telephone (HFT) : ✓',
-            'Speakers	: 4',
-            'Bluetooth	: ✓',
-            'Tweeter	: 4'
-          ],
-          'Safety & Security':[
-            'Dual Front SRS Airbags	: ✓',
-            'Side Airbags	: ✓',
-            'Side Curtain Airbags	: ✓',
-            'Driver Seatbelt Reminder	: ✓',
-            'Assistant Seatbelt Reminder	: ✓',
-            'Rear Seatbelt Reminder	: ✓',
-            'ISOFIX I‑Size Type	: ✓',
-            'Vehicle Stability Assist (VSA)	: ✓',
-            'Anti‑lock Braking System (ABS)	: ✓',
-            'Electronic Brake Distribution (EBD)	: ✓',
-            'Brake Assist (BA)	: ✓',
-            'Auto Brake Hold (ABH)	: -',
-            'Hill Start Assist (HSA)	: ✓',
-            'Emergency Stop Signal (ESS)	: ✓',
-            'Reverse Sensors	2',
-            'Reverse Camera	: Multi-angle',
-            'Honda LaneWatch Camera (LWC) : ✓',
-            'Forward Collision Warning (FCW)	: ✓',
-            'Collision Mitigation Braking System (CMBS)	: ✓',
-            'Lane Keep Assist System (LKAS)	: ✓',
-            'Lane Departure Warning (LDW)	: ✓',
-            'Road Departure Mitigation (RDM)	: ✓',
-            'Adaptive Cruise Control (ACC)	: ✓',
-            'Low Speed Follow (LSF)	: -',
-            'Auto High Beam (AHB)	: ✓',
-            'Lead Car Departure Notification (LCDN)	: ✓',
-            'Honda CONNECT (Safety, Security, Convenience) : -',
-            'Security Alarm with Immobiliser	: ✓'
-          ]
-
-      },
-        'Variant 4': {
-        'Engine & Perfomance': [
             '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
             '121 PS (119 hp) at 6,600 rpm, 145 Nm at 4,300 rpm',
             'Electronic Fuel Injection (PGM‑FI)',
             'Continuous Variable Transmission (CVT) with Econ mode',
-            'Electric Power Steering (EPS)',
-        ],
-        'Perfomance' :[
-          '0-100 km/h in 10.7 seconds',
-          'Maximum speed of 195 (km/h)',
-          'Fuel consumption of 5.6 (L/100km)'
-        ],
-        'Brake System': [
-          'Front :	Ventilated Disc',
-          'Rear :	Solid Disc',
-          'Parking Brake :	Hand Brake Lever'
-        ],
-        'Suspension System':[
-          'Front : MacPherson Strut',
-          'Rear : Torsion Beam'
-        ],
-        'Dimension': [
-          'Length (mm)	4,350',
-          'Width (mm)	1,748',
-          'Height (mm)	1,488',
-          'Wheelbase (mm)	2,600',
-          'Tread Front (mm)	1,495',
-          'Tread Rear (mm)	1,483',
-          'Curb Weight (kg)	1,125',
-          'Fuel Tank Capacity (litre) 40',
-          'Boot Capacity (Litre)	519'
-        ],
-        'Tyres' :[
-          'Wheel Type : Alloy',
-          'Wheel Size :	16',
-          'Tyre Size	: 185/60R16',
-          'Spare Tyre Size : 15'
-        ],
-        'Exterior' : [
-           'Headlights	: LED',
-            'Auto Headlights : ✓',	
-            'Daytime Running Lights	: LED',
-            'Front Fog Lights : LED',
-            'Side Mirrors With Turning Lights : ✓',	
-            'Outer Door Handle : Body Colour',
-            'Rear Combi Lights : LED',
-            'Antenna	: Shark Fin'
-        ],
-        'Control & Interior' :[
-          'Remote Engine Start : ✓',
-          'Walk Away Auto Lock : ✓',
-          'Smart Entry with Push Start Button : ✓',
-          'Paddle Shift : ✓',
-          'Deceleration Selector Paddle :	-',
-          'ECON Button : ✓',
-          'Meter Cluster : 7” TFT Meter',
-          'Air Conditioning	: Single Auto',
-          'Rear Air Conditioning Ventilation : ✓',
-          'Steering Wheel :	Leather^',
-          'Gear Knob Type	: Leather^',
-          'Upholstery	: Leather^',
-          'ULTRA Seat : ✓',
-          'Steering Wheel Switch Audio Control : ✓',
-          'Pedal Pad Type	: Sport',
-          'Power Adjustable Door Mirror : ✓',
-          'Power Retractable Door Mirror : ✓',
-          'Centre Console with Armrest	: ✓',
-          'Rear USB Charger : 2'
-        ],
-        'Audio':[
-          'Audio System	Standard Audio : 8” Display Audio',
-          'Apple CarPlay™ & Android Auto™ Connectivity* : ✓ with wireless ',
-          'USB Port	: 1',
-          'Hands‑Free Telephone (HFT) : ✓',
-          'Speakers	: 4',
-          'Bluetooth	: ✓',
-          'Tweeter	: 4'
-        ],
-        'Safety & Security':[
-          'Dual Front SRS Airbags	: ✓',
-          'Side Airbags	: ✓',
-          'Side Curtain Airbags	: ✓',
-          'Driver Seatbelt Reminder	: ✓',
-          'Assistant Seatbelt Reminder	: ✓',
-          'Rear Seatbelt Reminder	: ✓',
-          'ISOFIX I‑Size Type	: ✓',
-          'Vehicle Stability Assist (VSA)	: ✓',
-          'Anti‑lock Braking System (ABS)	: ✓',
-          'Electronic Brake Distribution (EBD)	: ✓',
-          'Brake Assist (BA)	: ✓',
-          'Auto Brake Hold (ABH)	: -',
-          'Hill Start Assist (HSA)	: ✓',
-          'Emergency Stop Signal (ESS)	: ✓',
-          'Reverse Sensors	2',
-          'Reverse Camera	: Multi-angle',
-          'Honda LaneWatch Camera (LWC) : ✓',
-          'Forward Collision Warning (FCW)	: ✓',
-          'Collision Mitigation Braking System (CMBS)	: ✓',
-          'Lane Keep Assist System (LKAS)	: ✓',
-          'Lane Departure Warning (LDW)	: ✓',
-          'Road Departure Mitigation (RDM)	: ✓',
-          'Adaptive Cruise Control (ACC)	: ✓',
-          'Low Speed Follow (LSF)	: -',
-          'Auto High Beam (AHB)	: ✓',
-          'Lead Car Departure Notification (LCDN)	: ✓',
-          'Honda CONNECT (Safety, Security, Convenience) : ✓',
-          'Security Alarm with Immobiliser	: ✓'
-        ]
-  
-        },
-        'Variant 5': {
-          'Engine & Perfomance': [
-              '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
-              '121 PS (119 hp) at 6,600 rpm, 145 Nm at 4,300 rpm',
-              'Electronic Fuel Injection (PGM‑FI)',
-              'Electric Continuous Variable Transmission (e‑CVT)',
-              'Electric Power Steering (EPS)',
+            'Electric Power Steering (EPS)'
           ],
-          'Perfomance' :[
-            '0-100 km/h in 9.7 seconds',
-            'Maximum speed of 177 (km/h)',
-            'Fuel consumption of 3.7 (L/100km)'
+          'Perfomance': [
+            '0-100 km/h in 10.7 seconds',
+            'Maximum speed of 195 (km/h)',
+            'Fuel consumption of 5.6 (L/100km)'
           ],
           'Brake System': [
-            'Front :	Ventilated Disc',
-            'Rear :	Solid Disc',
-            'Parking Brake :	Hand Brake Lever'
+            'Front : Ventilated Disc',
+            'Rear : Solid Disc',
+            'Parking Brake : Hand Brake Lever'
           ],
-          'Suspension System':[
+          'Suspension System': [
             'Front : MacPherson Strut',
             'Rear : Torsion Beam'
           ],
           'Dimension': [
-            'Length (mm)	4,350',
-            'Width (mm)	1,748',
-            'Height (mm)	1,488',
-            'Wheelbase (mm)	2,600',
-            'Tread Front (mm)	1,495',
-            'Tread Rear (mm)	1,483',
-            'Curb Weight (kg)	1,125',
+            'Length (mm) 4,362',
+            'Width (mm) 1,748',
+            'Height (mm) 1,488',
+            'Wheelbase (mm) 2,600',
+            'Tread Front (mm) 1,495',
+            'Tread Rear (mm) 1,483',
+            'Curb Weight (kg) 1,148',
             'Fuel Tank Capacity (litre) 40',
-            'Boot Capacity (Litre)	519'
+            'Boot Capacity (Litre) 289'
           ],
-          'Tyres' :[
+          'Tyres': [
             'Wheel Type : Alloy',
-            'Wheel Size :	16',
-            'Tyre Size	: 185/60R16',
-            'Spare Tyre Size : 15'
+            'Wheel Size : 16',
+            'Tyre Size : 185/55R16',
+            'Spare Tyre : Temporary repair kit (no spare tyre)'
           ],
-          'Exterior' : [
-            'Headlights	: LED',
-              'Auto Headlights : ✓',	
-              'Daytime Running Lights	: LED',
-              'Front Fog Lights : LED',
-              'Side Mirrors With Turning Lights : ✓',	
-              'Outer Door Handle : Body Colour',
-              'Rear Combi Lights : LED',
-              'Antenna	: Shark Fin'
+          'Exterior': [
+            'Headlights : Bi-LED',
+            'Auto Headlights : ✓',
+            'Daytime Running Lights : LED',
+            'Side Mirrors with Turning Lights : ✓',
+            'Auto Front Wiper : -',
+            'Rear Wiper System : Intermittent',
+            'Outer Door Handle : Body Colour',
+            'Rear Combi Lights : LED',
+            'Antenna : Shark Fin'
           ],
-          'Control & Interior' :[
+          'Control & Interior': [
+            'Remote Engine Start : ✓',
+            'Walk Away Auto Lock : ✓',
+            'Smart Entry with Push Start Button : ✓',
+            'Paddle Shift : ✓',
+            'Deceleration Selector Paddle : -',
+            'ECON Button : ✓',
+            'Meter Cluster : 7” TFT Meter',
+            'Air Conditioning : Single Auto',
+            'Rear Air Conditioning Ventilation : ✓',
+            'Steering Wheel : Leather^',
+            'Gear Knob Type : Leather^',
+            'Upholstery : Leather^',
+            'ULTRA Seat : ✓',
+            'Steering Wheel Switch Audio Control : ✓',
+            'Pedal Pad Type : Normal',
+            'Power Adjustable Door Mirror : ✓',
+            'Auto Retractable Door Mirror : ✓',
+            'Center Console with Armrest : ✓',
+            'Front Panel Ambient Light : ✓',
+            'Door Pocket, Front Foot, Front Door Inner Handle Light : ✓',
+            'Wireless Charger : -',
+            'Rear USB Charger : 2'
+          ],
+          'Audio': [
+            'Audio System : 10” Display Audio',
+            'Apple CarPlay™ & Android Auto™ Connectivity* : Wireless',
+            'USB Port : 2',
+            'Hands-Free Telephone (HFT) : ✓',
+            'Speakers : 4',
+            'Bluetooth : ✓',
+            'Tweeter : 4'
+          ],
+          'Safety & Security': [
+            'Dual Front SRS Airbags : ✓',
+            'Side Airbags : ✓',
+            'Side Curtain Airbags : ✓',
+            'Driver Seatbelt Reminder : ✓',
+            'Assistant Seatbelt Reminder : ✓',
+            'Rear Seatbelt Reminder : ✓',
+            'ISOFIX I-Size Type : ✓',
+            'Auto Door Lock : ✓',
+            'Vehicle Stability Assist (VSA) : ✓',
+            'Anti-lock Braking System (ABS) : ✓',
+            'Electronic Brake Distribution (EBD) : ✓',
+            'Auto Brake Hold (ABH) : -',
+            'Hill Start Assist (HSA) : ✓',
+            'Emergency Stop Signal (ESS) : ✓',
+            'Reverse Sensors : 2',
+            'Reverse Camera : ✓',
+            'Multi-View Camera System (MVCS) : -',
+            'Blind Spot Information with Cross Traffic Monitoring (BSI with CTM) : ✓',
+            'Honda LaneWatch Camera (LWC) : ✓',
+            'Forward Collision Warning (FCW) : ✓',
+            'Collision Mitigation Braking System (CMBS) : ✓',
+            'Lane Keep Assist System (LKAS) : ✓',
+            'Lane Departure Warning (LDW) : ✓',
+            'Road Departure Mitigation (RDM) : ✓',
+            'Adaptive Cruise Control (ACC) : ✓',
+            'Low Speed Follow (LSF) : -',
+            'Auto High Beam (AHB) : ✓',
+            'Lead Car Departure Notification (LCDN) : ✓',
+            'Honda CONNECT (Safety, Security, Convenience) : -',
+            'Security Alarm with Immobiliser : ✓'
+          ]
+        },
+
+        'Variant 2': {
+          'Engine & Perfomance': [
+            '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
+            '121 PS (119 hp) at 6,600 rpm, 145 Nm at 4,300 rpm',
+            'Electronic Fuel Injection (PGM‑FI)',
+            'Continuous Variable Transmission (CVT) with Econ mode',
+            'Electric Power Steering (EPS)'
+          ],
+          'Perfomance': [
+            '0-100 km/h in 10.7 seconds',
+            'Maximum speed of 194 (km/h)',
+            'Fuel consumption of 5.6 (L/100km)'
+          ],
+          'Brake System': [
+            'Front : Ventilated Disc',
+            'Rear : Solid Disc',
+            'Parking Brake : Hand Brake Lever'
+          ],
+          'Suspension System': [
+            'Front : MacPherson Strut',
+            'Rear : Torsion Beam'
+          ],
+          'Dimension': [
+            'Length (mm) 4,372',
+            'Width (mm) 1,748',
+            'Height (mm) 1,488',
+            'Wheelbase (mm) 2,600',
+            'Tread Front (mm) 1,495',
+            'Tread Rear (mm) 1,485',
+            'Curb Weight (kg) 1,152',
+            'Fuel Tank Capacity (litre) 40',
+            'Boot Capacity (Litre) 289'
+          ],
+          'Tyres': [
+            'Wheel Type : Alloy',
+            'Wheel Size : 16',
+            'Tyre Size : 185/55R16',
+            'Spare Tyre : Temporary repair kit (no spare tyre)'
+          ],
+          'Exterior': [
+            'Headlights : Bi-LED',
+            'Auto Headlights : ✓',
+            'Daytime Running Lights : LED',
+            'Side Mirrors with Turning Lights : ✓',
+            'Auto Front Wiper : ✓',
+            'Rear Wiper System : Intermittent',
+            'Outer Door Handle : Black',
+            'Rear Combi Lights : LED',
+            'Antenna : Shark Fin'
+          ],
+          'Control & Interior': [
+            'Remote Engine Start : ✓',
+            'Walk Away Auto Lock : ✓',
+            'Smart Entry with Push Start Button : ✓',
+            'Paddle Shift : ✓',
+            'Deceleration Selector Paddle : -',
+            'ECON Button : ✓',
+            'Meter Cluster : 7” TFT Meter',
+            'Air Conditioning : Single Auto',
+            'Rear Air Conditioning Ventilation : ✓',
+            'Steering Wheel : Leather^',
+            'Gear Knob Type : Leather^',
+            'Upholstery : Leather^',
+            'ULTRA Seat : ✓',
+            'Steering Wheel Switch Audio Control : ✓',
+            'Pedal Pad Type : Sport',
+            'Power Adjustable Door Mirror : ✓',
+            'Auto Retractable Door Mirror : ✓',
+            'Center Console with Armrest : ✓',
+            'Front Panel Ambient Light : ✓',
+            'Door Pocket, Front Foot, Front Door Inner Handle Light : ✓',
+            'Wireless Charger : -',
+            'Rear USB Charger : 2'
+          ],
+          'Audio': [
+            'Audio System : 10” Display Audio',
+            'Apple CarPlay™ & Android Auto™ Connectivity* : Wireless',
+            'USB Port : 2',
+            'Hands-Free Telephone (HFT) : ✓',
+            'Speakers : 4',
+            'Bluetooth : ✓',
+            'Tweeter : 4'
+          ],
+          'Safety & Security': [
+            'Dual Front SRS Airbags : ✓',
+            'Side Airbags : ✓',
+            'Side Curtain Airbags : ✓',
+            'Driver Seatbelt Reminder : ✓',
+            'Assistant Seatbelt Reminder : ✓',
+            'Rear Seatbelt Reminder : ✓',
+            'ISOFIX I-Size Type : ✓',
+            'Auto Door Lock : ✓',
+            'Vehicle Stability Assist (VSA) : ✓',
+            'Anti-lock Braking System (ABS) : ✓',
+            'Electronic Brake Distribution (EBD) : ✓',
+            'Auto Brake Hold (ABH) : -',
+            'Hill Start Assist (HSA) : ✓',
+            'Emergency Stop Signal (ESS) : ✓',
+            'Reverse Sensors : 2',
+            'Reverse Camera : ✓',
+            'Multi-View Camera System (MVCS) : ✓',
+            'Blind Spot Information with Cross Traffic Monitoring (BSI with CTM) : ✓',
+            'Honda LaneWatch Camera (LWC) : ✓',
+            'Forward Collision Warning (FCW) : ✓',
+            'Collision Mitigation Braking System (CMBS) : ✓',
+            'Lane Keep Assist System (LKAS) : ✓',
+            'Lane Departure Warning (LDW) : ✓',
+            'Road Departure Mitigation (RDM) : ✓',
+            'Adaptive Cruise Control (ACC) : ✓',
+            'Low Speed Follow (LSF) : -',
+            'Auto High Beam (AHB) : ✓',
+            'Lead Car Departure Notification (LCDN) : ✓',
+            'Honda CONNECT (Safety, Security, Convenience) : ✓',
+            'Security Alarm with Immobiliser : ✓'
+          ]
+        },
+
+        'Variant 3': {
+          'Engine & Perfomance': [
+            '1.5 litre DOHC i-VTEC Atkinson-cycle four-cylinder engine (acts mainly as generator)',
+            'Engine: 98 PS (72 kW) at 5,600 - 6,400 rpm, 127 Nm at 4,500 - 5,000 rpm',
+            'Electric motor: 109 PS (80 kW) at 3,500 - 8,000 rpm, 253 Nm at 0 - 3,000 rpm',
+            'Electronic Fuel Injection (PGM‑FI)',
+            'Electric Continuous Variable Transmission (e‑CVT)',
+            'Electric Power Steering (EPS)'
+          ],
+          'Perfomance': [
+            '0-100 km/h in 9.4 seconds',
+            'Maximum speed of 178 (km/h)',
+            'Fuel consumption of 3.7 (L/100km)'
+          ],
+          'Brake System': [
+            'Front : Ventilated Disc',
+            'Rear : Solid Disc',
+            'Parking Brake : Electric Parking Brake'
+          ],
+          'Suspension System': [
+            'Front : MacPherson Strut',
+            'Rear : Torsion Beam'
+          ],
+          'Dimension': [
+            'Length (mm) 4,372',
+            'Width (mm) 1,748',
+            'Height (mm) 1,488',
+            'Wheelbase (mm) 2,600',
+            'Tread Front (mm) 1,495',
+            'Tread Rear (mm) 1,485',
+            'Curb Weight (kg) 1,254',
+            'Fuel Tank Capacity (litre) 40',
+            'Boot Capacity (Litre) 289'
+          ],
+          'Tyres': [
+            'Wheel Type : Alloy',
+            'Wheel Size : 16',
+            'Tyre Size : 185/55R16',
+            'Spare Tyre : Temporary repair kit (no spare tyre)'
+          ],
+          'Exterior': [
+            'Headlights : Bi-LED',
+            'Auto Headlights : ✓',
+            'Daytime Running Lights : LED',
+            'Side Mirrors with Turning Lights : ✓',
+            'Auto Front Wiper : ✓',
+            'Rear Wiper System : Intermittent',
+            'Outer Door Handle : Black',
+            'Rear Combi Lights : LED',
+            'Antenna : Shark Fin'
+          ],
+          'Control & Interior': [
             'Remote Engine Start : ✓',
             'Walk Away Auto Lock : ✓',
             'Smart Entry with Push Start Button : ✓',
             'Paddle Shift : -',
-            'Deceleration Selector Paddle :	✓',
+            'Deceleration Selector Paddle : ✓',
             'ECON Button : ✓',
             'Meter Cluster : 7” TFT Meter',
-            'Air Conditioning	: Single Auto',
+            'Air Conditioning : Single Auto',
             'Rear Air Conditioning Ventilation : ✓',
-            'Steering Wheel :	Leather^',
-            'Gear Knob Type	: Leather^',
-            'Upholstery	: Leather^',
+            'Steering Wheel : Leather^',
+            'Gear Knob Type : Leather^',
+            'Upholstery : Leather^',
             'ULTRA Seat : ✓',
             'Steering Wheel Switch Audio Control : ✓',
-            'Pedal Pad Type	: Sport',
+            'Pedal Pad Type : Sport',
             'Power Adjustable Door Mirror : ✓',
-            'Power Retractable Door Mirror : ✓',
-            'Centre Console with Armrest	: ✓',
+            'Auto Retractable Door Mirror : ✓',
+            'Center Console with Armrest : ✓',
+            'Front Panel Ambient Light : ✓',
+            'Door Pocket, Front Foot, Front Door Inner Handle Light : ✓',
+            'Wireless Charger : ✓',
             'Rear USB Charger : 2'
           ],
-          'Audio':[
-            'Audio System	Standard Audio : 8” Display Audio',
-            'Apple CarPlay™ & Android Auto™ Connectivity* : ✓ with wireless ',
-            'USB Port	: 1',
-            'Hands‑Free Telephone (HFT) : ✓',
-            'Speakers	: 4',
-            'Bluetooth	: ✓',
-            'Tweeter	: 4'
+          'Audio': [
+            'Audio System : 10” Display Audio',
+            'Apple CarPlay™ & Android Auto™ Connectivity* : Wireless',
+            'USB Port : 2',
+            'Hands-Free Telephone (HFT) : ✓',
+            'Speakers : 4',
+            'Bluetooth : ✓',
+            'Tweeter : 4'
           ],
-          'Safety & Security':[
-            'Dual Front SRS Airbags	: ✓',
-            'Side Airbags	: ✓',
-            'Side Curtain Airbags	: ✓',
-            'Driver Seatbelt Reminder	: ✓',
-            'Assistant Seatbelt Reminder	: ✓',
-            'Rear Seatbelt Reminder	: ✓',
-            'ISOFIX I‑Size Type	: ✓',
-            'Vehicle Stability Assist (VSA)	: ✓',
-            'Anti‑lock Braking System (ABS)	: ✓',
-            'Electronic Brake Distribution (EBD)	: ✓',
-            'Brake Assist (BA)	: ✓',
-            'Auto Brake Hold (ABH)	: ✓',
-            'Hill Start Assist (HSA)	: ✓',
-            'Emergency Stop Signal (ESS)	: ✓',
-            'Reverse Sensors	2',
-            'Reverse Camera	: Multi-angle',
+          'Safety & Security': [
+            'Dual Front SRS Airbags : ✓',
+            'Side Airbags : ✓',
+            'Side Curtain Airbags : ✓',
+            'Driver Seatbelt Reminder : ✓',
+            'Assistant Seatbelt Reminder : ✓',
+            'Rear Seatbelt Reminder : ✓',
+            'ISOFIX I-Size Type : ✓',
+            'Auto Door Lock : ✓',
+            'Vehicle Stability Assist (VSA) : ✓',
+            'Anti-lock Braking System (ABS) : ✓',
+            'Electronic Brake Distribution (EBD) : ✓',
+            'Auto Brake Hold (ABH) : ✓',
+            'Hill Start Assist (HSA) : ✓',
+            'Emergency Stop Signal (ESS) : ✓',
+            'Reverse Sensors : 2',
+            'Reverse Camera : ✓',
+            'Multi-View Camera System (MVCS) : ✓',
+            'Blind Spot Information with Cross Traffic Monitoring (BSI with CTM) : ✓',
             'Honda LaneWatch Camera (LWC) : ✓',
-            'Forward Collision Warning (FCW)	: ✓',
-            'Collision Mitigation Braking System (CMBS)	: ✓',
-            'Lane Keep Assist System (LKAS)	: ✓',
-            'Lane Departure Warning (LDW)	: ✓',
-            'Road Departure Mitigation (RDM)	: ✓',
-            'Adaptive Cruise Control (ACC)	: ✓',
-            'Low Speed Follow (LSF)	: ✓',
-            'Auto High Beam (AHB)	: ✓',
-            'Lead Car Departure Notification (LCDN)	: ✓',
+            'Forward Collision Warning (FCW) : ✓',
+            'Collision Mitigation Braking System (CMBS) : ✓',
+            'Lane Keep Assist System (LKAS) : ✓',
+            'Lane Departure Warning (LDW) : ✓',
+            'Road Departure Mitigation (RDM) : ✓',
+            'Adaptive Cruise Control (ACC) : ✓',
+            'Low Speed Follow (LSF) : ✓',
+            'Auto High Beam (AHB) : ✓',
+            'Lead Car Departure Notification (LCDN) : ✓',
             'Honda CONNECT (Safety, Security, Convenience) : ✓',
-            'Security Alarm with Immobiliser	: ✓'
+            'Security Alarm with Immobiliser : ✓'
           ]
-    
-        },
-      // Add more variants here
-  },
+        }
+      },
   'Honda Civic'           : {
     'Variant 1': {
       'Engine & Perfomance': [
@@ -2478,13 +2189,15 @@ const carData = {
 
   },
   'Honda WRV'             : {
+    // DG4 facelift, launched 1 September 2026. Base S variant discontinued;
+    // range is now E / V / RS. Shared updates: 17" alloys, 10" Display Audio.
     'Variant 1': {
         'Engine': [
             '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
             '1,498 Displacement (CC)',
             'Max Torque : 145 Nm,  14.8 kg-m and 4300 rpm',
             'Max Power : 121 PS , 89 kW and 6600 rpm',
-            'Electronic Fuel Injection (PGM‑FI)',
+            'Electronic Fuel Injection (PGM-FI)',
             'Continuous Variable Transmission (CVT)',
             'Electric Power Steering (EPS)'
         ],
@@ -2505,67 +2218,70 @@ const carData = {
         'Dimension': [
           'Length (mm)	4,060',
           'Width (mm)	1,780',
-          'Height (mm)	1,576',
+          'Height (mm)	1,608',
           'Wheelbase (mm)	2,485',
           'Tread Front (mm)	1,540',
           'Tread Rear (mm)	1,540',
-          'Curb Weight (kg)	1,108',
+          'Curb Weight (kg)	1,111',
           'Ground Clearance (mm) 207',
           'Fuel Tank Capacity (litre) 40',
           'Boot Capacity (Litre)	380'
         ],
         'Tyres' :[
-          'Wheel Type : Alloy',
-          'Wheel Size :	16',
-          'Tyre Size	: 215/60/R16',
-          'Spare Tyre Size : 16'
+          'Wheel Type : Alloy (Black)',
+          'Wheel Size :	17',
+          'Tyre Size	: 215/55/R17',
+          'Spare Tyre Size : 17'
         ],
         'Exterior' : [
            'Headlights	: Halogen',
-            'Auto Headlights : -',	
+            'Auto Headlights : ✓',
             'Daytime Running Lights	: -',
             'Front Fog Lights : -',
             'Front LED Sequential Turn Signals : Bulb',
-            'Side Mirrors With Turning Lights : ✓',	
+            'Side Mirrors With Turning Lights : ✓',
             'Outer Door Handle : Body Colour',
             'Rear Combi Lights : LED',
-            'Antenna	: Micro Pole'
+            'Antenna	: Shark Fin'
         ],
         'Control & Interior' :[
-          'Remote Engine Start : -',
-          'Walk Away Auto Lock : -',
+          'Remote Engine Start : ✓',
+          'Walk Away Auto Lock : ✓',
           'Smart Entry with Push Start Button : ✓',
           'Paddle Shift : -',
-          'Cruise Control : -',
-          'Meter Cluster : Analogue',
+          'Cruise Control : ✓',
+          'Meter Cluster : 4.2" TFT Meter',
           'Air Conditioning	: Manual',
           'Air Conditioning Control	: Switch',
           'Steering Wheel :	Urethane',
           'Gear Knob Type	: Urethane',
           'Upholstery	: Fabric',
+          'Wireless Charger : -',
+          'Ambient Lighting : -',
           'Rear Wiper System : ✓',
           'Steering Wheel Switch Audio Control : ✓',
           'Pedal Pad Type	: Normal',
           'Power Adjustable Door Mirror : ✓',
           'Power Retractable Door Mirror : ✓',
           'Centre Console with Armrest	: Fabric',
-          'Rear Accessory Socket : 1'          
+          'Rear Accessory Socket : 1'
         ],
         'Audio':[
-          'Audio System	Standard Audio : 7” Display Audio',
-          'Apple CarPlay™ & Android Auto™ Connectivity* : ✓',
+          'Audio System	Standard Audio : 10” Display Audio',
+          'Apple CarPlay™ & Android Auto™ Connectivity* : ✓ Wireless',
           'USB Port	: 2',
           'Hands‑Free Telephone (HFT) : ✓',
-          'Speakers	: 2',
+          'Speakers	: 4',
           'Bluetooth	: ✓'
         ],
         'Safety & Security':[
           'Dual Front SRS Airbags: ✓',
           'Side Airbags: ✓',
           'Side Curtain Airbags: -',
+          'Total Airbags: 4',
           'Driver Seatbelt Reminder: ✓',
           'Assistant Seatbelt Reminder: ✓',
-          'Rear Seat Reminder: -',
+          'Rear Seat Reminder: ✓',
           'ISOFIX I‑Size Type: ✓',
           'Auto Door Lock: ✓',
           'Vehicle Stability Assist (VSA): ✓',
@@ -2574,353 +2290,252 @@ const carData = {
           'Hill Start Assist (HSA): ✓',
           'Emergency Stop Signal (ESS): ✓',
           'Reverse Sensors: 2',
-          'Reverse Camera: -',
+          'Reverse Camera: Multi-Angle',
+          '360-Degree Camera: -',
           'Honda LaneWatch Camera (LWC): ✓',
-          'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LCDN): -',
-          'Forward Collision Warning (FCW): -',
-          'Collision Mitigation Braking System (CMBS): -',
-          'Lane Keep Assist System (LKAS): -',
-          'Lane Departure Warning (LDW): -',
-          'Road Departure Mitigation (RDM): -',
-          'Adaptive Cruise Control (ACC): -',
-          'Auto High Beam: -',
-          'Lead Car Departure Notification: -',
+          'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LCDN): ✓',
+          'Forward Collision Warning (FCW): ✓',
+          'Collision Mitigation Braking System (CMBS): ✓',
+          'Lane Keep Assist System (LKAS): ✓',
+          'Lane Departure Warning (LDW): ✓',
+          'Road Departure Mitigation (RDM): ✓',
+          'Adaptive Cruise Control (ACC): ✓',
+          'Auto High Beam: ✓',
+          'Lead Car Departure Notification: ✓',
           'Honda CONNECT (Safety, Security, Convenience): -',
           'Security Alarm with Immobiliser: ✓'
         ]
     },
     'Variant 2': {
-      'Engine': [
-          '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
-          '1,498 Displacement (CC)',
-          'Max Torque : 145 Nm,  14.8 kg-m and 4300 rpm',
-          'Max Power : 121 PS , 89 kW and 6600 rpm',
-          'Electronic Fuel Injection (PGM‑FI)',
-          'Continuous Variable Transmission (CVT)',
-          'Electric Power Steering (EPS)'
-      ],
-      'Perfomance': [
-          '160 km/h Maximum speed',
-          '11s of Accelaration of 0-100 km/h (secs)',
-          'Fuel Consumption (L/100km) : 6.0'
-      ],
-      'Brake System': [
-        'Front :	Ventilated Disc',
-        'Rear :	Drum',
-        'Parking Brake :	Hand Brake Lever'
-      ],
-      'Suspension System':[
-        'Front : MacPherson Strut',
-        'Rear : Torsion Beam'
-      ],
-      'Dimension': [
-        'Length (mm)	4,060',
-        'Width (mm)	1,780',
-        'Height (mm)	1,608',
-        'Wheelbase (mm)	2,485',
-        'Tread Front (mm)	1,540',
-        'Tread Rear (mm)	1,540',
-        'Curb Weight (kg)	1,111',
-        'Ground Clearance (mm) 207',
-        'Fuel Tank Capacity (litre) 40',
-        'Boot Capacity (Litre)	380'
-      ],
-      'Tyres' :[
-        'Wheel Type : Alloy',
-        'Wheel Size :	16',
-        'Tyre Size	: 215/60/R16',
-        'Spare Tyre Size : 16'
-      ],
-      'Exterior' : [
-         'Headlights	: Halogen',
-          'Auto Headlights :✓-',	
-          'Daytime Running Lights	: -',
-          'Front Fog Lights : -',
-          'Front LED Sequential Turn Signals : Bulb',
-          'Side Mirrors With Turning Lights : ✓',	
-          'Outer Door Handle : Body Colour',
-          'Rear Combi Lights : LED',
-          'Antenna	: Shark Fin'
-      ],
-      'Control & Interior' :[
-        'Remote Engine Start : ✓',
-        'Walk Away Auto Lock : ✓',
-        'Smart Entry with Push Start Button : ✓',
-        'Paddle Shift : -',
-        'Cruise Control : ✓',
-        'Meter Cluster : 4.2" TFT Meter',
-        'Air Conditioning	: Manual',
-        'Air Conditioning Control	: Switch',
-        'Steering Wheel :	Urethane',
-        'Gear Knob Type	: Urethane',
-        'Upholstery	: Fabric',
-        'Rear Wiper System : ✓',
-        'Steering Wheel Switch Audio Control : ✓',
-        'Pedal Pad Type	: Normal',
-        'Power Adjustable Door Mirror : ✓',
-        'Power Retractable Door Mirror : ✓',
-        'Centre Console with Armrest	: Fabric',
-        'Rear Accessory Socket : 1'
-      ],
-      'Audio':[
-        'Audio System	Standard Audio : 7” Display Audio',
-        'Apple CarPlay™ & Android Auto™ Connectivity* : ✓',
-        'USB Port	: 2',
-        'Hands‑Free Telephone (HFT) : ✓',
-        'Speakers	: 4',
-        'Bluetooth	: ✓'
-      ],
-      'Safety & Security':[
-        'Dual Front SRS Airbags: ✓',
-        'Side Airbags: ✓',
-        'Side Curtain Airbags: -',
-        'Driver Seatbelt Reminder: ✓',
-        'Assistant Seatbelt Reminder: ✓',
-        'Rear Seat Reminder: ✓',
-        'ISOFIX I‑Size Type: ✓',
-        'Auto Door Lock: ✓',
-        'Vehicle Stability Assist (VSA): ✓',
-        'Anti‑Lock Braking System (ABS): ✓',
-        'Electronic Brake Distribution (EBD): ✓',
-        'Hill Start Assist (HSA): ✓',
-        'Emergency Stop Signal (ESS): ✓',
-        'Reverse Sensors: 2',
-        'Reverse Camera: Multi-Angle',
-        'Honda LaneWatch Camera (LWC): ✓',
-        'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LCDN): ✓',
-        'Forward Collision Warning (FCW): ✓',
-        'Collision Mitigation Braking System (CMBS): ✓',
-        'Lane Keep Assist System (LKAS): ✓',
-        'Lane Departure Warning (LDW): ✓',
-        'Road Departure Mitigation (RDM): ✓',
-        'Adaptive Cruise Control (ACC): ✓',
-        'Auto High Beam: ✓',
-        'Lead Car Departure Notification: ✓',
-        'Honda CONNECT (Safety, Security, Convenience): -',
-        'Security Alarm with Immobiliser: ✓'
-      ]
+        'Engine': [
+            '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
+            '1,498 Displacement (CC)',
+            'Max Torque : 145 Nm,  14.8 kg-m and 4300 rpm',
+            'Max Power : 121 PS , 89 kW and 6600 rpm',
+            'Electronic Fuel Injection (PGM-FI)',
+            'Continuous Variable Transmission (CVT)',
+            'Electric Power Steering (EPS)'
+        ],
+        'Perfomance': [
+            '160 km/h Maximum speed',
+            '11s of Accelaration of 0-100 km/h (secs)',
+            'Fuel Consumption (L/100km) : 6.0'
+        ],
+        'Brake System': [
+          'Front :	Ventilated Disc',
+          'Rear :	Drum',
+          'Parking Brake :	Hand Brake Lever'
+        ],
+        'Suspension System':[
+          'Front : MacPherson Strut',
+          'Rear : Torsion Beam'
+        ],
+        'Dimension': [
+          'Length (mm)	4,060',
+          'Width (mm)	1,780',
+          'Height (mm)	1,608',
+          'Wheelbase (mm)	2,485',
+          'Tread Front (mm)	1,540',
+          'Tread Rear (mm)	1,540',
+          'Curb Weight (kg)	1,111',
+          'Ground Clearance (mm) 207',
+          'Fuel Tank Capacity (litre) 40',
+          'Boot Capacity (Litre)	380'
+        ],
+        'Tyres' :[
+          'Wheel Type : Alloy (Black)',
+          'Wheel Size :	17',
+          'Tyre Size	: 215/55/R17',
+          'Spare Tyre Size : 17'
+        ],
+        'Exterior' : [
+           'Headlights	: LED',
+            'Auto Headlights : ✓',
+            'Daytime Running Lights	: LED',
+            'Front Fog Lights : LED',
+            'Front LED Sequential Turn Signals : LED',
+            'Side Mirrors With Turning Lights : ✓',
+            'Outer Door Handle : Body Colour',
+            'Rear Combi Lights : LED',
+            'Antenna	: Shark Fin'
+        ],
+        'Control & Interior' :[
+          'Remote Engine Start : ✓',
+          'Walk Away Auto Lock : ✓',
+          'Smart Entry with Push Start Button : ✓',
+          'Paddle Shift : -',
+          'Cruise Control : ✓',
+          'Meter Cluster : 4.2" TFT Meter',
+          'Air Conditioning	: Single Auto',
+          'Air Conditioning Control	: Switch',
+          'Steering Wheel :	Leather^',
+          'Gear Knob Type	: Urethane',
+          'Upholstery	: Leather^ + Fabric with Blue Stitchings',
+          'Wireless Charger : -',
+          'Ambient Lighting : -',
+          'Rear Wiper System : ✓',
+          'Steering Wheel Switch Audio Control : ✓',
+          'Pedal Pad Type	: Normal',
+          'Power Adjustable Door Mirror : ✓',
+          'Power Retractable Door Mirror : ✓',
+          'Centre Console with Armrest	: Leather',
+          'Rear Accessory Socket : 1'
+        ],
+        'Audio':[
+          'Audio System	Standard Audio : 10” Display Audio',
+          'Apple CarPlay™ & Android Auto™ Connectivity* : ✓ Wireless',
+          'USB Port	: 2',
+          'Hands‑Free Telephone (HFT) : ✓',
+          'Speakers	: 6',
+          'Bluetooth	: ✓'
+        ],
+        'Safety & Security':[
+          'Dual Front SRS Airbags: ✓',
+          'Side Airbags: ✓',
+          'Side Curtain Airbags: -',
+          'Total Airbags: 4',
+          'Driver Seatbelt Reminder: ✓',
+          'Assistant Seatbelt Reminder: ✓',
+          'Rear Seat Reminder: ✓',
+          'ISOFIX I‑Size Type: ✓',
+          'Auto Door Lock: ✓',
+          'Vehicle Stability Assist (VSA): ✓',
+          'Anti‑Lock Braking System (ABS): ✓',
+          'Electronic Brake Distribution (EBD): ✓',
+          'Hill Start Assist (HSA): ✓',
+          'Emergency Stop Signal (ESS): ✓',
+          'Reverse Sensors: 2',
+          'Reverse Camera: Multi-Angle',
+          '360-Degree Camera: -',
+          'Honda LaneWatch Camera (LWC): ✓',
+          'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LCDN): ✓',
+          'Forward Collision Warning (FCW): ✓',
+          'Collision Mitigation Braking System (CMBS): ✓',
+          'Lane Keep Assist System (LKAS): ✓',
+          'Lane Departure Warning (LDW): ✓',
+          'Road Departure Mitigation (RDM): ✓',
+          'Adaptive Cruise Control (ACC): ✓',
+          'Auto High Beam: ✓',
+          'Lead Car Departure Notification: ✓',
+          'Honda CONNECT (Safety, Security, Convenience): -',
+          'Security Alarm with Immobiliser: ✓'
+        ]
     },
     'Variant 3': {
-      'Engine': [
-          '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
-          '1,498 Displacement (CC)',
-          'Max Torque : 145 Nm,  14.8 kg-m and 4300 rpm',
-          'Max Power : 121 PS , 89 kW and 6600 rpm',
-          'Electronic Fuel Injection (PGM‑FI)',
-          'Continuous Variable Transmission (CVT)',
-          'Electric Power Steering (EPS)'
-      ],
-      'Perfomance': [
-          '160 km/h Maximum speed',
-          '11s of Accelaration of 0-100 km/h (secs)',
-          'Fuel Consumption (L/100km) : 6.0'
-      ],
-      'Brake System': [
-        'Front :	Ventilated Disc',
-        'Rear :	Drum',
-        'Parking Brake :	Hand Brake Lever'
-      ],
-      'Suspension System':[
-        'Front : MacPherson Strut',
-        'Rear : Torsion Beam'
-      ],
-      'Dimension': [
-        'Length (mm)	4,060',
-        'Width (mm)	1,780',
-        'Height (mm)	1,608',
-        'Wheelbase (mm)	2,485',
-        'Tread Front (mm)	1,540',
-        'Tread Rear (mm)	1,540',
-        'Curb Weight (kg)	1,111',
-        'Ground Clearance (mm) 207',
-        'Fuel Tank Capacity (litre) 40',
-        'Boot Capacity (Litre)	380'
-      ],
-      'Tyres' :[
-        'Wheel Type : Alloy',
-        'Wheel Size :	16',
-        'Tyre Size	: 215/60/R16',
-        'Spare Tyre Size : 16'
-      ],
-      'Exterior' : [
-         'Headlights	: Halogen',
-          'Auto Headlights :✓-',	
-          'Daytime Running Lights	: LED',
-          'Front Fog Lights : LED',
-          'Front LED Sequential Turn Signals : LED',
-          'Side Mirrors With Turning Lights : ✓',	
-          'Outer Door Handle : Body Colour',
-          'Rear Combi Lights : LED',
-          'Antenna	: Shark Fin'
-      ],
-      'Control & Interior' :[
-        'Remote Engine Start : ✓',
-        'Walk Away Auto Lock : ✓',
-        'Smart Entry with Push Start Button : ✓',
-        'Paddle Shift : -',
-        'Cruise Control : ✓',
-        'Meter Cluster : 4.2" TFT Meter',
-        'Air Conditioning	: Single Auto',
-        'Air Conditioning Control	: Switch',
-        'Steering Wheel :	Leather^',
-        'Gear Knob Type	: Urethane',
-        'Upholstery	: Leather^ + Fabric with Blue Stitchings',
-        'Rear Wiper System : ✓',
-        'Steering Wheel Switch Audio Control : ✓',
-        'Pedal Pad Type	: Normal',
-        'Power Adjustable Door Mirror : ✓',
-        'Power Retractable Door Mirror : ✓',
-        'Centre Console with Armrest	: Leather',
-        'Rear Accessory Socket : 1'
-      ],
-      'Audio':[
-        'Audio System	Standard Audio : 7” Display Audio',
-        'Apple CarPlay™ & Android Auto™ Connectivity* : ✓',
-        'USB Port	: 2',
-        'Hands‑Free Telephone (HFT) : ✓',
-        'Speakers	: 4',
-        'Bluetooth	: ✓'
-      ],
-      'Safety & Security':[
-        'Dual Front SRS Airbags: ✓',
-        'Side Airbags: ✓',
-        'Side Curtain Airbags: -',
-        'Driver Seatbelt Reminder: ✓',
-        'Assistant Seatbelt Reminder: ✓',
-        'Rear Seat Reminder: ✓',
-        'ISOFIX I‑Size Type: ✓',
-        'Auto Door Lock: ✓',
-        'Vehicle Stability Assist (VSA): ✓',
-        'Anti‑Lock Braking System (ABS): ✓',
-        'Electronic Brake Distribution (EBD): ✓',
-        'Hill Start Assist (HSA): ✓',
-        'Emergency Stop Signal (ESS): ✓',
-        'Reverse Sensors: 2',
-        'Reverse Camera: Multi-Angle',
-        'Honda LaneWatch Camera (LWC): ✓',
-        'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LCDN): ✓',
-        'Forward Collision Warning (FCW): ✓',
-        'Collision Mitigation Braking System (CMBS): ✓',
-        'Lane Keep Assist System (LKAS): ✓',
-        'Lane Departure Warning (LDW): ✓',
-        'Road Departure Mitigation (RDM): ✓',
-        'Adaptive Cruise Control (ACC): ✓',
-        'Auto High Beam: ✓',
-        'Lead Car Departure Notification: ✓',
-        'Honda CONNECT (Safety, Security, Convenience): -',
-        'Security Alarm with Immobiliser: ✓'
-      ]
-    },
-    'Variant 4': {
-      'Engine': [
-          '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
-          '1,498 Displacement (CC)',
-          'Max Torque : 145 Nm,  14.8 kg-m and 4300 rpm',
-          'Max Power : 121 PS , 89 kW and 6600 rpm',
-          'Electronic Fuel Injection (PGM‑FI)',
-          'Continuous Variable Transmission (CVT)',
-          'Electric Power Steering (EPS)'
-      ],
-      'Perfomance': [
-          '160 km/h Maximum speed',
-          '11.3s of Accelaration of 0-100 km/h (secs)',
-          'Fuel Consumption (L/100km) : 6.0'
-      ],
-      'Brake System': [
-        'Front :	Ventilated Disc',
-        'Rear :	Drum',
-        'Parking Brake :	Hand Brake Lever'
-      ],
-      'Suspension System':[
-        'Front : MacPherson Strut',
-        'Rear : Torsion Beam'
-      ],
-      'Dimension': [
-        'Length (mm)	4,060',
-        'Width (mm)	1,780',
-        'Height (mm)	1,608',
-        'Wheelbase (mm)	2,485',
-        'Tread Front (mm)	1,540',
-        'Tread Rear (mm)	1,540',
-        'Curb Weight (kg)	1,111',
-        'Ground Clearance (mm) 207',
-        'Fuel Tank Capacity (litre) 40',
-        'Boot Capacity (Litre)	380'
-      ],
-      'Tyres' :[
-        'Wheel Type : Alloy',
-        'Wheel Size :	17',
-        'Tyre Size	: 215/55/R17',
-        'Spare Tyre Size : 17'
-      ],
-      'Exterior' : [
-         'Headlights	: Halogen',
-          'Auto Headlights :✓-',	
-          'Daytime Running Lights	: LED',
-          'Front Fog Lights : LED',
-          'Front LED Sequential Turn Signals : LED with Sequential',
-          'Side Mirrors With Turning Lights : ✓',	
-          'Outer Door Handle : Body Colour',
-          'Rear Combi Lights : LED',
-          'Antenna	: Shark Fin'
-      ],
-      'Control & Interior' :[
-        'Remote Engine Start : ✓',
-        'Walk Away Auto Lock : ✓',
-        'Smart Entry with Push Start Button : ✓',
-        'Paddle Shift : ✓',
-        'Cruise Control : ✓',
-        'Meter Cluster : 4.2" TFT Meter',
-        'Air Conditioning	: Single Auto',
-        'Air Conditioning Control	: Switch',
-        'Steering Wheel :	Leather^',
-        'Gear Knob Type	: Urethane',
-        'Upholstery	: Leather^ + Fabric with Red Stitchings',
-        'Rear Wiper System : ✓',
-        'Steering Wheel Switch Audio Control : ✓',
-        'Pedal Pad Type	: Normal',
-        'Power Adjustable Door Mirror : ✓',
-        'Power Retractable Door Mirror : ✓',
-        'Centre Console with Armrest	: Leather',
-        'Rear Accessory Socket : 1'
-      ],
-      'Audio':[
-        'Audio System	Standard Audio : 7” Display Audio',
-        'Apple CarPlay™ & Android Auto™ Connectivity* : ✓',
-        'USB Port	: 2',
-        'Hands‑Free Telephone (HFT) : ✓',
-        'Speakers	: 6',
-        'Bluetooth	: ✓'
-      ],
-      'Safety & Security':[
-        'Dual Front SRS Airbags: ✓',
-        'Side Airbags: ✓',
-        'Side Curtain Airbags: ✓',
-        'Driver Seatbelt Reminder: ✓',
-        'Assistant Seatbelt Reminder: ✓',
-        'Rear Seat Reminder: ✓',
-        'ISOFIX I‑Size Type: ✓',
-        'Auto Door Lock: ✓',
-        'Vehicle Stability Assist (VSA): ✓',
-        'Anti‑Lock Braking System (ABS): ✓',
-        'Electronic Brake Distribution (EBD): ✓',
-        'Hill Start Assist (HSA): ✓',
-        'Emergency Stop Signal (ESS): ✓',
-        'Reverse Sensors: 2',
-        'Reverse Camera: Multi-Angle',
-        'Honda LaneWatch Camera (LWC): ✓',
-        'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LCDN): ✓',
-        'Forward Collision Warning (FCW): ✓',
-        'Collision Mitigation Braking System (CMBS): ✓',
-        'Lane Keep Assist System (LKAS): ✓',
-        'Lane Departure Warning (LDW): ✓',
-        'Road Departure Mitigation (RDM): ✓',
-        'Adaptive Cruise Control (ACC): ✓',
-        'Auto High Beam: ✓',
-        'Lead Car Departure Notification: ✓',
-        'Honda CONNECT (Safety, Security, Convenience): ✓',
-        'Security Alarm with Immobiliser: ✓'
-      ]
+        'Engine': [
+            '1.5 litre DOHC i-VTEC naturally-aspirated four-cylinder engine',
+            '1,498 Displacement (CC)',
+            'Max Torque : 145 Nm,  14.8 kg-m and 4300 rpm',
+            'Max Power : 121 PS , 89 kW and 6600 rpm',
+            'Electronic Fuel Injection (PGM-FI)',
+            'Continuous Variable Transmission (CVT)',
+            'Electric Power Steering (EPS)'
+        ],
+        'Perfomance': [
+            '160 km/h Maximum speed',
+            '11.2s of Accelaration of 0-100 km/h (secs)',
+            'Fuel Consumption (L/100km) : 6.0'
+        ],
+        'Brake System': [
+          'Front :	Ventilated Disc',
+          'Rear :	Drum',
+          'Parking Brake :	Hand Brake Lever'
+        ],
+        'Suspension System':[
+          'Front : MacPherson Strut',
+          'Rear : Torsion Beam'
+        ],
+        'Dimension': [
+          'Length (mm)	4,060',
+          'Width (mm)	1,780',
+          'Height (mm)	1,608',
+          'Wheelbase (mm)	2,485',
+          'Tread Front (mm)	1,540',
+          'Tread Rear (mm)	1,540',
+          'Curb Weight (kg)	1,111',
+          'Ground Clearance (mm) 207',
+          'Fuel Tank Capacity (litre) 40',
+          'Boot Capacity (Litre)	380'
+        ],
+        'Tyres' :[
+          'Wheel Type : Alloy (Black)',
+          'Wheel Size :	17',
+          'Tyre Size	: 215/55/R17',
+          'Spare Tyre Size : 17'
+        ],
+        'Exterior' : [
+           'Headlights	: LED',
+            'Auto Headlights : ✓',
+            'Daytime Running Lights	: LED',
+            'Front Fog Lights : LED',
+            'Front LED Sequential Turn Signals : LED with Sequential',
+            'Side Mirrors With Turning Lights : ✓',
+            'Outer Door Handle : Black',
+            'Rear Combi Lights : LED',
+            'Antenna	: Shark Fin',
+            'Two-Tone Paint (Blazing Red Pearl with Black Roof) : ✓'
+        ],
+        'Control & Interior' :[
+          'Remote Engine Start : ✓',
+          'Walk Away Auto Lock : ✓',
+          'Smart Entry with Push Start Button : ✓',
+          'Paddle Shift : ✓',
+          'Cruise Control : ✓',
+          'Meter Cluster : 4.2" TFT Meter',
+          'Air Conditioning	: Single Auto',
+          'Air Conditioning Control	: Switch',
+          'Steering Wheel :	Leather^',
+          'Gear Knob Type	: Urethane',
+          'Upholstery	: Leather^ + Fabric with Red Stitchings',
+          'Wireless Charger : ✓',
+          'Ambient Lighting : ✓ Red',
+          'Rear Wiper System : ✓',
+          'Steering Wheel Switch Audio Control : ✓',
+          'Pedal Pad Type	: Normal',
+          'Power Adjustable Door Mirror : ✓',
+          'Power Retractable Door Mirror : ✓',
+          'Centre Console with Armrest	: Leather',
+          'Rear Accessory Socket : 1'
+        ],
+        'Audio':[
+          'Audio System	Standard Audio : 10” Display Audio',
+          'Apple CarPlay™ & Android Auto™ Connectivity* : ✓ Wireless',
+          'USB Port	: 2',
+          'Hands‑Free Telephone (HFT) : ✓',
+          'Speakers	: 6',
+          'Bluetooth	: ✓'
+        ],
+        'Safety & Security':[
+          'Dual Front SRS Airbags: ✓',
+          'Side Airbags: ✓',
+          'Side Curtain Airbags: ✓',
+          'Total Airbags: 6',
+          'Driver Seatbelt Reminder: ✓',
+          'Assistant Seatbelt Reminder: ✓',
+          'Rear Seat Reminder: ✓',
+          'ISOFIX I‑Size Type: ✓',
+          'Auto Door Lock: ✓',
+          'Vehicle Stability Assist (VSA): ✓',
+          'Anti‑Lock Braking System (ABS): ✓',
+          'Electronic Brake Distribution (EBD): ✓',
+          'Hill Start Assist (HSA): ✓',
+          'Emergency Stop Signal (ESS): ✓',
+          'Reverse Sensors: 2',
+          'Reverse Camera: Multi-Angle',
+          '360-Degree Camera: ✓',
+          'Honda LaneWatch Camera (LWC): ✓',
+          'Honda SENSING (FCW, CMBS, LDW, LKAS, RDM, ACC, AHB, LCDN): ✓',
+          'Forward Collision Warning (FCW): ✓',
+          'Collision Mitigation Braking System (CMBS): ✓',
+          'Lane Keep Assist System (LKAS): ✓',
+          'Lane Departure Warning (LDW): ✓',
+          'Road Departure Mitigation (RDM): ✓',
+          'Adaptive Cruise Control (ACC): ✓',
+          'Auto High Beam: ✓',
+          'Lead Car Departure Notification: ✓',
+          'Honda CONNECT (Safety, Security, Convenience): ✓',
+          'Security Alarm with Immobiliser: ✓'
+        ]
     },
     // Add more variants here
   },
@@ -3637,12 +3252,9 @@ function populateTabs() {
     'HondaCity2': 'Honda City',
     'HondaCity3': 'Honda City',
     'HondaCity4': 'Honda City',
-    'HondaCity5': 'Honda City',
     'CityHatchback1' : 'Honda City Hatchback',
     'CityHatchback2' : 'Honda City Hatchback',
     'CityHatchback3' : 'Honda City Hatchback',
-    'CityHatchback4' : 'Honda City Hatchback',
-    'CityHatchback5' : 'Honda City Hatchback',
     'Civic1' : 'Honda Civic',
     'Civic2' : 'Honda Civic',
     'Civic3' : 'Honda Civic',
@@ -3654,7 +3266,6 @@ function populateTabs() {
     'Wrv1' : 'Honda WRV',
     'Wrv2' : 'Honda WRV',
     'Wrv3' : 'Honda WRV',
-    'Wrv4' : 'Honda WRV',
     'Crv1' : 'Honda CRV',
     'Crv2' : 'Honda CRV',
     'Crv3' : 'Honda CRV',
@@ -3992,6 +3603,20 @@ document.addEventListener('DOMContentLoaded', function () {
           return;
       }
 
+      // EIR_MIN/EIR_MAX are effective interest rates, not flat rates. Rebased
+      // from the old 1.50-6.00 flat range when the calculator moved to reducing
+      // balance for the Hire-Purchase (Amendment) Act 2026.
+      //
+      // 3.00-9.00 covers the real market: the cheapest new-car deals sit near
+      // 4.3-4.9% EIR (2.30-2.55% flat) and a Honda promo rate bottoms out
+      // around 3.5% EIR (1.88% flat), so 3.00 is a floor nobody will hit by
+      // accident; 9.00% EIR (~4.9% flat) is past anything a new Honda attracts.
+      // The span is also chosen so the slider's four grid ticks land on round
+      // numbers -- 3, 4.5, 6, 7.5, 9 -- instead of 4.875 / 7.25 / 9.625.
+      //
+      // The mirrored bounds on #interest-input in index.html must match these.
+      var EIR_MIN = 3.00, EIR_MAX = 9.00, EIR_DEFAULT = 4.50;
+
       $.each($elements, function (i, $element) {
           let rangerOptions = $(this).attr('data-piotnetforms-range-slider');
           if ($($element).siblings('.irs').length == 0) {
@@ -4000,25 +3625,38 @@ document.addEventListener('DOMContentLoaded', function () {
                   type: "single",
                   grid: true,
                   step: 0.01,
-                  min: 1.50,
-                  max: 6.00,
-                  from: 3.5,
+                  min: EIR_MIN,
+                  max: EIR_MAX,
+                  from: EIR_DEFAULT,
                   postfix: "%",
                   onChange: function (data) {
-                      // Update the text box with the current slider value
+                      // Mirror the slider into the text box, and keep the grey
+                      // flat-rate line matching the rate being dragged.
+                      //
+                      // Deliberately does NOT call calculate(): the monthly
+                      // instalment and totals only update when Calculate is
+                      // clicked. The flat equivalent is not a result, it is the
+                      // same rate said a different way, so it tracks live.
                       $('#interest-input').val(data.from);
+                      updateFlatEquivalent();
                   }
               }).data("ionRangeSlider");
 
-              // When text box value changes, update the slider
+              // When text box value changes, update the slider (still no
+              // recalc -- same reason as above).
               $('#interest-input').on('input', function () {
-                  var inputVal = $(this).val();
-                  if (inputVal >= 1.50 && inputVal <= 6.00) {
+                  var inputVal = parseFloat($(this).val());
+                  if (inputVal >= EIR_MIN && inputVal <= EIR_MAX) {
                       slider.update({ from: inputVal });
+                      updateFlatEquivalent();
                   }
               });
 
               $($element).change();
+
+              // Fill the flat-rate line in on first paint, so it never shows a
+              // bare dash next to a slider that already has a value on it.
+              updateFlatEquivalent();
           }
       });
   };

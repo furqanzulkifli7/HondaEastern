@@ -29,7 +29,7 @@ const QUALITY = 82;
 // too, so every source file that can mention an image is rewritten.
 const REF_FILES = [
   'index.html',
-  'assets/css/untitled2.css',
+  'assets/css/home.css',
   'assets/css/bootstrap.min2.css',
   'assets/js/agency.js',
   'assets/js/scripts.js',

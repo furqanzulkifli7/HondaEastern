@@ -2721,3 +2721,45 @@ header.masthead .text-container p {
   display: none;
 }
 }
+/* The promotion carousels lay every slide out side by side in a .owl-stage
+   several thousand pixels wide. On phones that let the whole page scroll
+   sideways - the page could be dragged left/right, which looked broken.
+   Clipping the section horizontally keeps the carousels swipeable while the
+   page itself only scrolls up and down. Verified as the sole cause by hiding
+   each top-level section in turn: hiding #promotion was what removed it. */
+#promotion {
+  overflow-x: hidden;
+}
+
+/* Carousel arrows are absolutely positioned over the slide. On a phone the
+   full-size royal-blue blocks sat on top of the promo text. Below the 2-up
+   breakpoint, shrink them, make them translucent and tuck them into the edge
+   so they stay tappable without covering the artwork. */
+@media (max-width: 899px) {
+
+  #promotion .owl-carousel .owl-nav button.owl-prev,
+  #promotion .owl-carousel .owl-nav button.owl-next {
+    font-size: 1.7em;
+    padding: 0.05em 0.3em !important;
+    background-color: rgba(65, 105, 225, 0.72);
+    border-radius: 4px;
+  }
+
+  #promotion .owl-carousel .owl-nav button.owl-prev {
+    left: 14px;
+  }
+
+  #promotion .owl-carousel .owl-nav button.owl-next {
+    right: -14px;
+  }
+}
+
+/* Belt and braces for the above: the carousels re-measure themselves as images
+   arrive, and on some loads a stage briefly reported wider than the screen,
+   which let the page drag sideways. Nothing on this page uses position:sticky
+   (the .sticky-* utilities are unused), so clamping the document is safe and
+   guarantees the page only ever scrolls up and down. */
+html,
+body {
+  overflow-x: hidden;
+}

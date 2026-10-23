@@ -39,15 +39,16 @@ const NO_LAZY_MARKERS = ['openModal(', 'openModal2(', 'img-servis2'];
     let next = tag;
     const base = path.basename(src);
 
-    if (!/\swidth=/.test(next) && !/\sheight=/.test(next)) {
-      try {
-        const m = await sharp(file).metadata();
-        if (m.width && m.height) {
-          next = next.replace(/^<img\b/, `<img width="${m.width}" height="${m.height}"`);
-          dims++;
-        }
-      } catch { /* unreadable, leave alone */ }
-    }
+    // Refresh rather than only add: re-running `npm run images` can change a
+    // file's real pixel size, and a stale width/height reserves the wrong box.
+    try {
+      const m = await sharp(file).metadata();
+      if (m.width && m.height) {
+        const cleaned = next.replace(/\swidth="\d+"/, '').replace(/\sheight="\d+"/, '');
+        const sized = cleaned.replace(/^<img\b/, `<img width="${m.width}" height="${m.height}"`);
+        if (sized !== next) { next = sized; dims++; }
+      }
+    } catch { /* unreadable, leave alone */ }
     const inCarousel = NO_LAZY_MARKERS.some(mk => next.includes(mk));
     if (!/\sloading=/.test(next) && !EAGER.includes(base) && !inCarousel) {
       next = next.replace(/\s*\/?>$/, s => ' loading="lazy"' + s);

@@ -112,6 +112,17 @@ for (const model of prices.models) {
     if (next !== html) changes.push('JSON-LD structured data (index.html)');
     html = next;
   }
+
+  const all = prices.models.flatMap(m => m.variants.map(v => v.price));
+  const range = `"priceRange": "RM${Math.min(...all)}-RM${Math.max(...all)}"`;
+  const rangeRe = /"priceRange": "[^"]*"/;
+  if (!rangeRe.test(html)) {
+    problems.push('JSON-LD priceRange not found in index.html');
+  } else {
+    const next = html.replace(rangeRe, range);
+    if (next !== html) changes.push('JSON-LD priceRange (index.html)');
+    html = next;
+  }
 }
 
 // ------------------------------------------------------------- agency.js calc
